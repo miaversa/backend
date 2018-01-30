@@ -22,7 +22,7 @@ fmt :
 	go fmt ./...
 
 gen:
-	go-bindata -o templates/template.go -pkg templates templates/*.html
+	go-bindata -prefix templates -o templates/template.go -pkg templates templates/*.html
 
 test:
 	go test -v -race ./...

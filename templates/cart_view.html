@@ -2,8 +2,43 @@
 <html>
 <head>
 	<title>Teste</title>
+	<link rel="stylesheet" type="text/css" href="/assets/tachyons.min.css" />
 </head>
 <body>
+
+{{define "item"}}
+	<tr>
+		<td class="pa2 tc">x</td>
+		<td class="pa2 tc">{{.Name}}</td>
+		<td class="pa2 tc">{{.Price}}</td>
+	</tr>
+{{end}}
+
+{{define "shipping"}}
+	<tr>
+		<td class="pa2 tc" colspan="2">Frete</td>
+		<td class="pa2 tc">{{printf "%.2f" .}}</td>
+	</tr>
+{{end}}
+
+{{define "total"}}
+	<tr>
+		<td class="pa2 tc" colspan="2">Total</td>
+		<td class="pa2 tc">{{printf "%.2f" .}}</td>
+	</tr>
+{{end}}
+
+{{define "table"}}
+<table border="1">
+	{{range $k, $v := .Items}}
+		{{template "item" $v}}
+	{{end}}
+	{{template "shipping" .Shipping}}
+	{{template "total" .Total}}
+</table>
+{{end}}
+
+{{template "table" .}}
 
 </body>
 </html>

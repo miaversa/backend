@@ -13,6 +13,7 @@ clean:
 	go clean
 	-rm -rf vendor
 	-rm templates/*.go
+	-rm assets/*.go
 
 deps:
 	go get -u github.com/golang/dep/cmd/dep
@@ -23,6 +24,7 @@ fmt :
 
 gen:
 	go-bindata -prefix templates -o templates/template.go -pkg templates templates/*.html
+	go-bindata -prefix assets -o assets/assets.go -pkg assets assets/*.css
 
 test:
 	go test -v -race ./...

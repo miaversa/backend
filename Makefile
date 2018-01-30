@@ -1,9 +1,3 @@
-# Go parameters
-GOCMD=go
-GOGET=$(GOCMD) get
-GOBUILD=$(GOCMD) build
-GOCLEAN=$(GOCMD) clean
-GOTEST=$(GOCMD) test
 
 BINARY = backend
 
@@ -13,26 +7,30 @@ BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 
 LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.BRANCH=${BRANCH} -X main.COMMIT=${COMMIT}"
 
-all: build
+all: clean deps gen fmt test build
 
 clean:
-	-rm -f ${BINARY}
+	go clean
 	-rm -rf vendor
+	-rm templates/*.go
 
-deps: clean
-	${GOGET} -u github.com/golang/dep/cmd/dep
+deps:
+	go get -u github.com/golang/dep/cmd/dep
 	dep ensure
 
-fmt : deps
+fmt :
 	go fmt ./...
 
-test: fmt
-	$(GOTEST) -v -race ./...
+gen:
+	go-bindata -o templates/template.go -pkg templates templates/*.html
 
-build: test
-	${GOBUILD} ${LDFLAGS} -o ${BINARY}
+test:
+	go test -v -race ./...
+
+build:
+	go build ${LDFLAGS} -o ${BINARY}
 
 push:
 	git push origin master
 
-.PHONY: clean deps fmt test build push
+.PHONY: clean deps fmt gen test build push

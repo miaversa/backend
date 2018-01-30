@@ -24,6 +24,8 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Mount("/carrinho", router.CartRouter())
+	r.Mount("/cliente", router.CustomerRouter())
+	r.Mount("/pagamento", router.PaymentRouter())
 
 	log.Error(http.ListenAndServe(":8080", r))
 }

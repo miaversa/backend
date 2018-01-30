@@ -7,10 +7,10 @@ import (
 
 func CartRouter() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", view)
+	r.Get("/", cartView)
 	return r
 }
 
-func view(w http.ResponseWriter, r *http.Request) {
+func cartView(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("cart view"))
 }

@@ -8,6 +8,10 @@ import (
 	"os"
 )
 
+var VERSION string
+var BRANCH string
+var COMMIT string
+
 var log = logrus.New()
 
 func main() {

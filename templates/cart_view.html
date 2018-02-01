@@ -8,28 +8,44 @@
 
 {{define "item"}}
 	<tr>
-		<td class="pa2 tc">x</td>
-		<td class="pa2 tc">{{.Name}}</td>
-		<td class="pa2 tc">{{.Price}}</td>
+		<td class="pa2 tc">
+			<form method="post">
+				<input type="hidden" name="_method" value="delete">
+				<input type="hidden" name="sku" value="{{.Product.SKU}}">
+				<button type="submit">x</button>
+			</form>
+		</td>
+		<td class="pa2 tc">
+			<strong>{{.Product.Name}}</strong><br/>
+			{{range $k, $v := .Product.Options}}
+				{{ if eq $k "size" }}
+				Tamanho: 
+				{{end}}
+				{{$v}}
+			{{end}}
+		</td>
+		<td class="pa2 tc">{{.Product.Price}}</td>
+		<td class="pa2 tc">{{.Quantity}}</td>
+		<td class="pa2 tc">{{.Total}}</td>
 	</tr>
 {{end}}
 
 {{define "shipping"}}
 	<tr>
-		<td class="pa2 tc" colspan="2">Frete</td>
+		<td class="pa2 tc" colspan="4">Frete</td>
 		<td class="pa2 tc">{{printf "%.2f" .}}</td>
 	</tr>
 {{end}}
 
 {{define "total"}}
 	<tr>
-		<td class="pa2 tc" colspan="2">Total</td>
+		<td class="pa2 tc" colspan="4">Total</td>
 		<td class="pa2 tc">{{printf "%.2f" .}}</td>
 	</tr>
 {{end}}
 
 {{define "table"}}
-<table border="1">
+<table class="collapse ba br2 b--black-10 pv2 ph3">
 	{{range $k, $v := .Items}}
 		{{template "item" $v}}
 	{{end}}
@@ -38,7 +54,25 @@
 </table>
 {{end}}
 
+{{ if gt .Quantity 0 }}
 {{template "table" .}}
+{{else}}
+<p>Seu carrinho esta vazio</p>
+{{end}}
+<form method="post">
+	<input type="hidden" name="sku" value="123" />
+	<input type="hidden" name="name" value="Anel Redondo Legal" />
+	<input type="hidden" name="price" value="100.2" />
+	<input type="hidden" name="option_size" value="15" />
+	<button type="submit">anel</button>
+</form>
 
+<form method="post">
+	<input type="hidden" name="sku" value="402" />
+	<input type="hidden" name="name" value="Colar Maneiro" />
+	<input type="hidden" name="price" value="200.0" />
+	<input type="hidden" name="option_size" value="25" />
+	<button type="submit">colar</button>
+</form>
 </body>
 </html>

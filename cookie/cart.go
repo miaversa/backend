@@ -6,46 +6,54 @@ import (
 	"net/http"
 )
 
-type Service interface {
-	GetCart(r *http.Request) (model.Cart, error)
-	SaveCart(w http.ResponseWriter, c model.Cart) error
+type cartService struct {
+	cookieName string
+	sc         *securecookie.SecureCookie
+	secure     bool
 }
 
-type service struct {
-	sc *securecookie.SecureCookie
+func New(cookieName, hashKey, blockKey string, secure bool) *cartService {
+	return &cartService{
+		cookieName: cookieName,
+		sc:         securecookie.New([]byte(hashKey), []byte(blockKey)),
+		secure:     secure,
+	}
 }
 
-func New() *service {
-	hashKey := []byte("12345")
-	blockKey := []byte("1234567890123456")
-	return &service{sc: securecookie.New(hashKey, blockKey)}
-}
-
-func (s *service) GetCart(r *http.Request) (model.Cart, error) {
+func (s *cartService) GetCart(r *http.Request) (model.Cart, error) {
 	c := model.Cart{Items: []model.CartItem{}}
-	cookie, err := r.Cookie("mcart")
+	cookie, err := r.Cookie(s.cookieName)
 	if err != nil {
 		return c, nil
 	}
-	err = s.sc.Decode("mcart", cookie.Value, &c)
+	err = s.sc.Decode(s.cookieName, cookie.Value, &c)
 	if err != nil {
 		return model.Cart{}, err
 	}
 	return c, nil
 }
 
-func (s *service) SaveCart(w http.ResponseWriter, c model.Cart) error {
-	encoded, err := s.sc.Encode("mcart", c)
+func (s *cartService) SaveCart(w http.ResponseWriter, c model.Cart) error {
+	encoded, err := s.sc.Encode(s.cookieName, c)
 	if err != nil {
 		return err
 	}
-	cookie := &http.Cookie{
-		Name:     "mcart",
-		Value:    encoded,
-		Path:     "/",
-		Secure:   false,
-		HttpOnly: true,
-	}
+	cookie := s.createCookie(encoded)
 	http.SetCookie(w, cookie)
 	return nil
+}
+
+func (s *cartService) DropCart(w http.ResponseWriter) {
+	cookie := s.createCookie("")
+	http.SetCookie(w, cookie)
+}
+
+func (s *cartService) createCookie(value string) *http.Cookie {
+	return &http.Cookie{
+		Name:     s.cookieName,
+		Value:    value,
+		Path:     "/",
+		Secure:   s.secure,
+		HttpOnly: true,
+	}
 }

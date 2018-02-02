@@ -6,7 +6,7 @@
 </head>
 <body>
 
-{{define "item"}}
+{{define "cartItem"}}
 	<tr>
 		<td class="pa2 tc">
 			<form method="post">
@@ -30,32 +30,32 @@
 	</tr>
 {{end}}
 
-{{define "shipping"}}
+{{define "cartShipping"}}
 	<tr>
 		<td class="pa2 tc" colspan="4">Frete</td>
 		<td class="pa2 tc">{{printf "%.2f" .}}</td>
 	</tr>
 {{end}}
 
-{{define "total"}}
+{{define "cartTotal"}}
 	<tr>
 		<td class="pa2 tc" colspan="4">Total</td>
 		<td class="pa2 tc">{{printf "%.2f" .}}</td>
 	</tr>
 {{end}}
 
-{{define "table"}}
+{{define "cart"}}
 <table class="collapse ba br2 b--black-10 pv2 ph3">
 	{{range $k, $v := .Items}}
-		{{template "item" $v}}
+		{{template "cartItem" $v}}
 	{{end}}
-	{{template "shipping" .Shipping}}
-	{{template "total" .Total}}
+	{{template "cartShipping" .Shipping}}
+	{{template "cartTotal" .Total}}
 </table>
 {{end}}
 
 {{ if gt .Quantity 0 }}
-{{template "table" .}}
+{{template "cart" .}}
 {{else}}
 <p>Seu carrinho esta vazio</p>
 {{end}}

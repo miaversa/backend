@@ -6,14 +6,14 @@ import (
 	"strings"
 )
 
-type service struct {
+type handler struct {
 }
 
-func New() *service {
-	return &service{}
+func New() *handler {
+	return &handler{}
 }
 
-func (s *service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	filename := chi.URLParam(r, "filename")
 	if strings.HasSuffix(filename, ".css") {
 		w.Header().Set("Content-Type", "text/css; charset=utf-8")

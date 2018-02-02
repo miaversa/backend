@@ -54,12 +54,19 @@ func (s *service) update(w http.ResponseWriter, r *http.Request) {
 	}
 	i := model.CartItem{
 		Product: model.Product{
-			SKU:   r.PostFormValue("sku"),
-			Name:  r.PostFormValue("name"),
-			Price: price,
+			SKU:     r.PostFormValue("sku"),
+			Name:    r.PostFormValue("name"),
+			Price:   price,
+			Options: []model.ProductOption{},
 		},
 		Quantity: 1,
 	}
+
+	optSize := r.PostFormValue("option_size")
+	if "" != optSize {
+		i.Product.Options = append(i.Product.Options, model.ProductOption{Name: "size", Value: optSize})
+	}
+
 	s.AddItem(w, r, i)
 }
 

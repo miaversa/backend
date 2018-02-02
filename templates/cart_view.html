@@ -18,10 +18,10 @@
 		<td class="pa2 tc">
 			<strong>{{.Product.Name}}</strong><br/>
 			{{range $k, $v := .Product.Options}}
-				{{ if eq $k "size" }}
+				{{ if eq $v.Name "size" }}
 				Tamanho: 
 				{{end}}
-				{{$v}}
+				{{$v.Value}}
 			{{end}}
 		</td>
 		<td class="pa2 tc">{{.Product.Price}}</td>

@@ -19,13 +19,18 @@ type SessionService interface {
 	Set(w http.ResponseWriter, session string) error
 }
 
+type AuthService interface {
+	Validate(email, password string) bool
+}
+
 type handler struct {
-	session SessionService
+	session     SessionService
+	authService AuthService
 }
 
 // New creates a new login handler
-func New(session SessionService) *handler {
-	return &handler{session: session}
+func New(session SessionService, auth AuthService) *handler {
+	return &handler{session: session, authService: auth}
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -70,15 +75,19 @@ func (h *handler) auth(w http.ResponseWriter, r *http.Request) (err error) {
 		return t.Execute(w, nil)
 	}
 
+	email := r.PostFormValue("email")
+	password := r.PostFormValue("password")
+
+	if !h.authService.Validate(email, password) {
+		t := template.New(templateFile)
+		t.Parse(string(templates.MustAsset(templateFile)))
+		return t.Execute(w, nil)
+	}
+
 	redirect := Path + "?redirect=" + defaultRedirectPath
 	if r.FormValue("redirect") != "" {
 		redirect = r.FormValue("redirect")
 	}
-
-	email := r.PostFormValue("email")
-	password := r.PostFormValue("password")
-
-	// TODO: autenticar
 
 	h.session.Set(w, email)
 	http.Redirect(w, r, redirect, http.StatusFound)

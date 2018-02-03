@@ -3,6 +3,8 @@
 // templates/cart.html
 // templates/login.html
 // templates/payment.html
+// templates/register.html
+// templates/shipping.html
 // DO NOT EDIT!
 
 package templates
@@ -130,6 +132,46 @@ func paymentHtml() (*asset, error) {
 	return a, nil
 }
 
+var _registerHtml = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x2a\x4a\x4d\xcf\x2c\x2e\x49\x2d\x02\x04\x00\x00\xff\xff\x14\x40\xf9\x5f\x08\x00\x00\x00")
+
+func registerHtmlBytes() ([]byte, error) {
+	return bindataRead(
+		_registerHtml,
+		"register.html",
+	)
+}
+
+func registerHtml() (*asset, error) {
+	bytes, err := registerHtmlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "register.html", size: 8, mode: os.FileMode(436), modTime: time.Unix(1517702078, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _shippingHtml = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x2a\xce\xc8\x2c\x28\xc8\xcc\x4b\x07\x04\x00\x00\xff\xff\x24\x17\x1c\x2d\x08\x00\x00\x00")
+
+func shippingHtmlBytes() ([]byte, error) {
+	return bindataRead(
+		_shippingHtml,
+		"shipping.html",
+	)
+}
+
+func shippingHtml() (*asset, error) {
+	bytes, err := shippingHtmlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "shipping.html", size: 8, mode: os.FileMode(436), modTime: time.Unix(1517702087, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -185,6 +227,8 @@ var _bindata = map[string]func() (*asset, error){
 	"cart.html": cartHtml,
 	"login.html": loginHtml,
 	"payment.html": paymentHtml,
+	"register.html": registerHtml,
+	"shipping.html": shippingHtml,
 }
 
 // AssetDir returns the file names below a certain
@@ -230,6 +274,8 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"cart.html": &bintree{cartHtml, map[string]*bintree{}},
 	"login.html": &bintree{loginHtml, map[string]*bintree{}},
 	"payment.html": &bintree{paymentHtml, map[string]*bintree{}},
+	"register.html": &bintree{registerHtml, map[string]*bintree{}},
+	"shipping.html": &bintree{shippingHtml, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory

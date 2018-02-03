@@ -13,6 +13,7 @@ var Path string = "/login"
 var templateFile = "login.html"
 var defaultRedirectPath = "/perfil"
 
+// SessionService defines the session api
 type SessionService interface {
 	Get(r *http.Request) string
 	Set(w http.ResponseWriter, session string) error
@@ -22,6 +23,7 @@ type handler struct {
 	session SessionService
 }
 
+// New creates a new login handler
 func New(session SessionService) *handler {
 	return &handler{session: session}
 }

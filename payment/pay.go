@@ -6,12 +6,15 @@ import (
 	"net/http"
 )
 
+// Path for the routing
 var Path string = "/pagar"
+
 var templateFile string = "payment.html"
 
 type handler struct {
 }
 
+// New creates a new payment handler
 func New() *handler {
 	return &handler{}
 }

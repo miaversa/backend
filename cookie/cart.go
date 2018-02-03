@@ -12,6 +12,7 @@ type cartStore struct {
 	secure     bool
 }
 
+// NewCartStore creates a new Cart Storage
 func NewCartStore(cookieName, hashKey, blockKey string, secure bool) *cartStore {
 	return &cartStore{
 		cookieName: cookieName,

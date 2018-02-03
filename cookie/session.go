@@ -11,6 +11,7 @@ type sessionService struct {
 	secure     bool
 }
 
+// NewSessionService creates a new Session Service
 func NewSessionService(cookieName, hashKey, blockKey string, secure bool) *sessionService {
 	return &sessionService{
 		cookieName: cookieName,

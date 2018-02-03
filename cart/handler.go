@@ -9,8 +9,10 @@ import (
 	"strings"
 )
 
+// Path for the routing
 var Path string = "/carrinho"
 
+// CartStore defines the api for the cart storage
 type CartStore interface {
 	GetCart(r *http.Request) (model.Cart, error)
 	SaveCart(w http.ResponseWriter, c model.Cart) error
@@ -21,6 +23,7 @@ type handler struct {
 	store CartStore
 }
 
+// New creates a new Cart Handler
 func New(store CartStore) *handler {
 	return &handler{store: store}
 }

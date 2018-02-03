@@ -6,15 +6,18 @@ import (
 	"strings"
 )
 
+// Path for the routing
 var Path string = "/assets/{filename}"
 
 type handler struct {
 }
 
+// New creates a new assets handler
 func New() *handler {
 	return &handler{}
 }
 
+// ServeHTTP sends the file with the correct content type
 func (s *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	filename := chi.URLParam(r, "filename")
 	if strings.HasSuffix(filename, ".css") {

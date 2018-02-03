@@ -7,7 +7,9 @@ import (
 	"net/http"
 )
 
+// Path for the routing
 var Path string = "/login"
+
 var templateFile = "login.html"
 var defaultRedirectPath = "/perfil"
 
@@ -66,15 +68,18 @@ func (h *handler) auth(w http.ResponseWriter, r *http.Request) (err error) {
 		return t.Execute(w, nil)
 	}
 
-	//	redirect := Path + "?redirect=" + defaultRedirectPath
-	//	if r.FormValue("redirect") != "" {
-	//		redirect = r.FormValue("redirect")
-	//	}
-	//
-	//	session := r.PostFormValue("email")
-	//
-	//	h.session.Set(w, session)
-	//	http.Redirect(w, r, redirect, http.StatusFound)
+	redirect := Path + "?redirect=" + defaultRedirectPath
+	if r.FormValue("redirect") != "" {
+		redirect = r.FormValue("redirect")
+	}
+
+	email := r.PostFormValue("email")
+	password := r.PostFormValue("password")
+
+	// TODO: autenticar
+
+	h.session.Set(w, email)
+	http.Redirect(w, r, redirect, http.StatusFound)
 	return
 }
 

@@ -1,0 +1,7 @@
+language: go
+install: echo
+script:
+  - go build -v ./...
+  - ./tests.sh
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

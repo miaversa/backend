@@ -36,14 +36,14 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *handler) view(w http.ResponseWriter, r *http.Request) error {
 	r.ParseForm()
 
-	p := "/perfil"
+	redirect := "/perfil"
 	if r.FormValue("redirect") != "" {
-		p = r.FormValue("redirect")
+		redirect = r.FormValue("redirect")
 	}
 
 	session := h.session.Get(r)
 	if session != "" {
-		http.Redirect(w, r, p, http.StatusFound)
+		http.Redirect(w, r, redirect, http.StatusFound)
 		return nil
 	}
 
@@ -55,14 +55,14 @@ func (h *handler) view(w http.ResponseWriter, r *http.Request) error {
 func (h *handler) auth(w http.ResponseWriter, r *http.Request) (err error) {
 	r.ParseForm()
 
-	p := Path + "?redirect=/perfil"
+	redirect := Path + "?redirect=/perfil"
 	if r.FormValue("redirect") != "" {
-		p = r.FormValue("redirect")
+		redirect = r.FormValue("redirect")
 	}
 
 	session := r.PostFormValue("email")
 
 	h.session.Set(w, session)
-	http.Redirect(w, r, p, http.StatusFound)
+	http.Redirect(w, r, redirect, http.StatusFound)
 	return
 }

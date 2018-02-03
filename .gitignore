@@ -16,3 +16,4 @@ vendor/
 backend
 templates/template.go
 assets/assets.go
+coverage.txt

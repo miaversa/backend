@@ -90,6 +90,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  name = "github.com/thedevsaddam/govalidator"
+  packages = ["."]
+  revision = "7dd63bd37e6cd22cd4d0fc672e36c2b3b1246fbf"
+  version = "v1.8"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
@@ -117,6 +123,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "708deb9b831143677c2f237a21caa028adc233f0f4782ac86114c99dae8b04ae"
+  inputs-digest = "2ea38e3b0746795b3441051a9046fbc2e7f00feeacf619d924156d678def6545"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -2,6 +2,7 @@
 // sources:
 // templates/cart.html
 // templates/login.html
+// templates/payment.html
 // DO NOT EDIT!
 
 package templates
@@ -109,6 +110,26 @@ func loginHtml() (*asset, error) {
 	return a, nil
 }
 
+var _paymentHtml = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x34\x8e\xb1\x0e\x83\x30\x10\x43\x67\xf2\x15\x69\x3e\x80\x13\xfb\x91\xa5\xed\x5c\x06\x96\x8e\x29\xb8\x0d\x6a\x08\x15\x77\x43\xf3\xf7\x15\xa0\x4e\x96\xf5\x2c\xdb\x7c\xba\xdc\xce\xfd\xbd\xbb\xda\xa8\x73\xf2\x86\xff\x82\x30\x7a\x53\xb1\x4e\x9a\xe0\x7b\x88\x82\xe9\x30\xa6\xe2\x34\xe5\xb7\x5d\x91\x5a\x27\x5a\x12\x24\x02\xea\xac\x96\x0f\x5a\xa7\xf8\x2a\x0d\x22\xce\xc6\x15\xcf\xd6\x51\x10\x81\x0a\x69\x18\x62\x59\xb2\xd4\xf3\x94\xeb\x9d\x93\x37\x4c\xc7\x10\x3f\x96\xb1\x6c\xcd\xb1\xf1\x5d\x78\x85\x19\x59\x17\xa6\xd8\x6c\x91\x83\x31\xed\xd7\x7e\x01\x00\x00\xff\xff\x68\x73\xfc\x57\xb1\x00\x00\x00")
+
+func paymentHtmlBytes() ([]byte, error) {
+	return bindataRead(
+		_paymentHtml,
+		"payment.html",
+	)
+}
+
+func paymentHtml() (*asset, error) {
+	bytes, err := paymentHtmlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "payment.html", size: 177, mode: os.FileMode(436), modTime: time.Unix(1517691276, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -163,6 +184,7 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"cart.html": cartHtml,
 	"login.html": loginHtml,
+	"payment.html": paymentHtml,
 }
 
 // AssetDir returns the file names below a certain
@@ -207,6 +229,7 @@ type bintree struct {
 var _bintree = &bintree{nil, map[string]*bintree{
 	"cart.html": &bintree{cartHtml, map[string]*bintree{}},
 	"login.html": &bintree{loginHtml, map[string]*bintree{}},
+	"payment.html": &bintree{paymentHtml, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory

@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+var Path string = "/assets/{filename}"
+
 type handler struct {
 }
 

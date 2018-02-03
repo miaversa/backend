@@ -6,21 +6,21 @@ import (
 	"net/http"
 )
 
-type cartService struct {
+type cartStore struct {
 	cookieName string
 	sc         *securecookie.SecureCookie
 	secure     bool
 }
 
-func New(cookieName, hashKey, blockKey string, secure bool) *cartService {
-	return &cartService{
+func NewCartStore(cookieName, hashKey, blockKey string, secure bool) *cartStore {
+	return &cartStore{
 		cookieName: cookieName,
 		sc:         securecookie.New([]byte(hashKey), []byte(blockKey)),
 		secure:     secure,
 	}
 }
 
-func (s *cartService) GetCart(r *http.Request) (model.Cart, error) {
+func (s *cartStore) GetCart(r *http.Request) (model.Cart, error) {
 	c := model.Cart{Items: []model.CartItem{}}
 	cookie, err := r.Cookie(s.cookieName)
 	if err != nil {
@@ -33,7 +33,7 @@ func (s *cartService) GetCart(r *http.Request) (model.Cart, error) {
 	return c, nil
 }
 
-func (s *cartService) SaveCart(w http.ResponseWriter, c model.Cart) error {
+func (s *cartStore) SaveCart(w http.ResponseWriter, c model.Cart) error {
 	encoded, err := s.sc.Encode(s.cookieName, c)
 	if err != nil {
 		return err
@@ -43,12 +43,12 @@ func (s *cartService) SaveCart(w http.ResponseWriter, c model.Cart) error {
 	return nil
 }
 
-func (s *cartService) DropCart(w http.ResponseWriter) {
+func (s *cartStore) DropCart(w http.ResponseWriter) {
 	cookie := s.createCookie("")
 	http.SetCookie(w, cookie)
 }
 
-func (s *cartService) createCookie(value string) *http.Cookie {
+func (s *cartStore) createCookie(value string) *http.Cookie {
 	return &http.Cookie{
 		Name:     s.cookieName,
 		Value:    value,

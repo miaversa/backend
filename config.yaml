@@ -1,7 +1,12 @@
 debug: true
 
 cookie:
-  name: mcart
   hashKey: 12345
   blockKey: 1234567890123456
   domain: backend.miaversa.com.br
+  
+  cart:
+    name: mcart
+    
+  session:
+    name: msession

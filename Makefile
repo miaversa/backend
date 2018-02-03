@@ -5,15 +5,12 @@ VERSION ?= latest
 COMMIT = $(shell git rev-parse HEAD)
 BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 
-LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.BRANCH=${BRANCH} -X main.COMMIT=${COMMIT}"
+#LDFLAGS = -ldflags "-X main.VERSION=${VERSION} -X main.BRANCH=${BRANCH} -X main.COMMIT=${COMMIT}"
 
 all: clean deps gen fmt test build
 
 clean:
 	go clean
-	-rm -rf vendor
-	-rm templates/*.go
-	-rm assets/*.go
 
 deps:
 	go get -u github.com/golang/dep/cmd/dep
@@ -30,7 +27,7 @@ test:
 	go test -v -race ./...
 
 build:
-	go build ${LDFLAGS} -o ${BINARY}
+	go build -o ${BINARY}
 
 push:
 	git push origin master

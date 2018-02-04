@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/gorilla/securecookie"
 	"github.com/miaversa/backend/assets"
 	"github.com/miaversa/backend/cart"
 	"github.com/miaversa/backend/config"
@@ -29,13 +30,14 @@ func main() {
 
 	hashKey := viper.GetString("cookie.hashKey")
 	blockKey := viper.GetString("cookie.blockKey")
+	sc := securecookie.New([]byte(hashKey), []byte(blockKey))
 
-	sessionService := cookie.NewSessionService(viper.GetString("cookie.session.name"), hashKey, blockKey, secure)
+	sessionService := cookie.NewSessionService(viper.GetString("cookie.session.name"), sc, secure)
 
 	dummyAuth := login.NewDummyAuth("maria@gmail.com", "password")
 	loginService := login.New(sessionService, dummyAuth)
 
-	cartStore := cookie.NewCartStore(viper.GetString("cookie.cart.name"), hashKey, blockKey, secure)
+	cartStore := cookie.NewCartStore(viper.GetString("cookie.cart.name"), sc, secure)
 	cartService := cart.New(cartStore)
 	assetService := assets.New()
 	paymentService := payment.New()

@@ -13,10 +13,10 @@ type cartStore struct {
 }
 
 // NewCartStore creates a new Cart Storage
-func NewCartStore(cookieName, hashKey, blockKey string, secure bool) *cartStore {
+func NewCartStore(cookieName string, sc *securecookie.SecureCookie, secure bool) *cartStore {
 	return &cartStore{
 		cookieName: cookieName,
-		sc:         securecookie.New([]byte(hashKey), []byte(blockKey)),
+		sc:         sc,
 		secure:     secure,
 	}
 }

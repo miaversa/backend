@@ -12,10 +12,10 @@ type sessionService struct {
 }
 
 // NewSessionService creates a new Session Service
-func NewSessionService(cookieName, hashKey, blockKey string, secure bool) *sessionService {
+func NewSessionService(cookieName string, sc *securecookie.SecureCookie, secure bool) *sessionService {
 	return &sessionService{
 		cookieName: cookieName,
-		sc:         securecookie.New([]byte(hashKey), []byte(blockKey)),
+		sc:         sc,
 		secure:     secure,
 	}
 }

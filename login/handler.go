@@ -10,8 +10,10 @@ import (
 // Path for the routing
 var Path string = "/login"
 
+// Default redirect
+var DefaultRedirectPath = "/perfil"
+
 var templateFile = "login.html"
-var defaultRedirectPath = "/perfil"
 
 // SessionService defines the session api
 type SessionService interface {
@@ -48,7 +50,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *handler) view(w http.ResponseWriter, r *http.Request) error {
 	r.ParseForm()
 
-	redirect := defaultRedirectPath
+	redirect := DefaultRedirectPath
 	if r.FormValue("redirect") != "" {
 		redirect = r.FormValue("redirect")
 	}
@@ -66,6 +68,8 @@ func (h *handler) view(w http.ResponseWriter, r *http.Request) error {
 
 func (h *handler) auth(w http.ResponseWriter, r *http.Request) (err error) {
 	r.ParseForm()
+	email := r.PostFormValue("email")
+	password := r.PostFormValue("password")
 
 	valid, errors := validate(r)
 	_ = errors
@@ -75,16 +79,13 @@ func (h *handler) auth(w http.ResponseWriter, r *http.Request) (err error) {
 		return t.Execute(w, nil)
 	}
 
-	email := r.PostFormValue("email")
-	password := r.PostFormValue("password")
-
 	if !h.authService.Validate(email, password) {
 		t := template.New(templateFile)
 		t.Parse(string(templates.MustAsset(templateFile)))
 		return t.Execute(w, nil)
 	}
 
-	redirect := Path + "?redirect=" + defaultRedirectPath
+	redirect := Path + "?redirect=" + DefaultRedirectPath
 	if r.FormValue("redirect") != "" {
 		redirect = r.FormValue("redirect")
 	}
@@ -97,12 +98,12 @@ func (h *handler) auth(w http.ResponseWriter, r *http.Request) (err error) {
 func validate(r *http.Request) (bool, map[string][]string) {
 	validationRules := govalidator.MapData{
 		"email":    []string{"required", "email"},
-		"password": []string{"required", "between:6,20"},
+		"password": []string{"required"},
 	}
 
 	validationMessages := govalidator.MapData{
-		"email":    []string{"required:email requerido"},
-		"password": []string{"required:a senha é requerida.", "between:a senha deve ter no minimo 6 caracteres"},
+		"email":    []string{"required:email requerido."},
+		"password": []string{"required:a senha é requerida."},
 	}
 
 	v := govalidator.New(govalidator.Options{

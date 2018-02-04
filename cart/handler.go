@@ -85,6 +85,10 @@ func (h *handler) addItem(w http.ResponseWriter, r *http.Request, i model.CartIt
 }
 
 func (h *handler) removeItem(w http.ResponseWriter, r *http.Request, sku string) (err error) {
+	if sku == "" {
+		http.Redirect(w, r, Path, http.StatusFound)
+		return
+	}
 	if c, err := h.store.GetCart(r); err == nil {
 		c.RemoveItem(sku)
 		if err = h.store.SaveCart(w, c); err == nil {

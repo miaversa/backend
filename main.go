@@ -8,8 +8,8 @@ import (
 	"github.com/miaversa/backend/cart"
 	"github.com/miaversa/backend/config"
 	"github.com/miaversa/backend/cookie"
-	"github.com/miaversa/backend/customer"
 	"github.com/miaversa/backend/login"
+	"github.com/miaversa/backend/mem"
 	"github.com/miaversa/backend/payment"
 	"github.com/miaversa/backend/register"
 	"github.com/miaversa/backend/shipping"
@@ -29,7 +29,7 @@ func main() {
 		secure = false
 	}
 
-	customerService := customer.NewDummyCustomerService()
+	customerService := mem.NewCustomerService()
 
 	hashKey := viper.GetString("cookie.hashKey")
 	blockKey := viper.GetString("cookie.blockKey")
@@ -37,7 +37,7 @@ func main() {
 
 	sessionService := cookie.NewSessionService(viper.GetString("cookie.session.name"), sc, secure)
 
-	dummyAuth := login.NewDummyAuth("maria@gmail.com", "password")
+	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
 	loginService := login.New(sessionService, dummyAuth)
 
 	cartStore := cookie.NewCartStore(viper.GetString("cookie.cart.name"), sc, secure)
@@ -45,7 +45,7 @@ func main() {
 	assetService := assets.New()
 	paymentService := payment.New()
 	registerService := register.New(sessionService, customerService)
-	shippingService := shipping.New()
+	shippingService := shipping.New(sessionService, customerService)
 
 	r.Handle(login.Path, loginService)
 	r.Handle(cart.Path, cartService)

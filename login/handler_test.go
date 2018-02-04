@@ -2,6 +2,7 @@ package login_test
 
 import (
 	"github.com/miaversa/backend/login"
+	"github.com/miaversa/backend/mem"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -9,24 +10,9 @@ import (
 	"testing"
 )
 
-type dummySessionService struct {
-	cookieName string
-	email      string
-}
-
-func (s *dummySessionService) Get(r *http.Request) string {
-	return s.email
-}
-
-func (s *dummySessionService) Set(w http.ResponseWriter, session string) error {
-	c := &http.Cookie{Name: s.cookieName, Value: session}
-	http.SetCookie(w, c)
-	return nil
-}
-
 func TestHandler_View(t *testing.T) {
-	sessionService := &dummySessionService{cookieName: "session"}
-	dummyAuth := login.NewDummyAuth("maria@gmail.com", "password")
+	sessionService := mem.NewSessionService("session")
+	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
 	handler := login.New(sessionService, dummyAuth)
 
 	req, err := http.NewRequest(http.MethodGet, "/", nil)
@@ -44,9 +30,9 @@ func TestHandler_View(t *testing.T) {
 }
 
 func TestHandler_View_With_Session(t *testing.T) {
-	sessionService := &dummySessionService{cookieName: "session"}
-	sessionService.email = "maria@gmail.com"
-	dummyAuth := login.NewDummyAuth("maria@gmail.com", "password")
+	sessionService := mem.NewSessionService("session")
+	sessionService.Email = "maria@gmail.com"
+	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
 	handler := login.New(sessionService, dummyAuth)
 
 	req, err := http.NewRequest(http.MethodGet, "/", nil)
@@ -74,8 +60,8 @@ func TestHandler_View_With_Session(t *testing.T) {
 }
 
 func TestHandler_View_With_Redirect(t *testing.T) {
-	sessionService := &dummySessionService{cookieName: "session"}
-	dummyAuth := login.NewDummyAuth("maria@gmail.com", "password")
+	sessionService := mem.NewSessionService("session")
+	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
 	handler := login.New(sessionService, dummyAuth)
 
 	req, err := http.NewRequest(http.MethodGet, "/?redirect=/perfil", nil)
@@ -94,9 +80,9 @@ func TestHandler_View_With_Redirect(t *testing.T) {
 
 func TestHandler_View_With_Session_With_Redirect(t *testing.T) {
 	newLocation := "/pagar"
-	sessionService := &dummySessionService{cookieName: "session"}
-	sessionService.email = "maria@gmail.com"
-	dummyAuth := login.NewDummyAuth("maria@gmail.com", "password")
+	sessionService := mem.NewSessionService("session")
+	sessionService.Email = "maria@gmail.com"
+	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
 	handler := login.New(sessionService, dummyAuth)
 
 	req, err := http.NewRequest(http.MethodGet, "/?redirect="+newLocation, nil)
@@ -124,8 +110,8 @@ func TestHandler_View_With_Session_With_Redirect(t *testing.T) {
 }
 
 func TestHandler_Auth_Invalid(t *testing.T) {
-	sessionService := &dummySessionService{cookieName: "session"}
-	dummyAuth := login.NewDummyAuth("maria@gmail.com", "password")
+	sessionService := mem.NewSessionService("session")
+	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
 	handler := login.New(sessionService, dummyAuth)
 
 	req, err := http.NewRequest(http.MethodPost, "/", nil)
@@ -145,8 +131,8 @@ func TestHandler_Auth_Invalid(t *testing.T) {
 func TestHandler_Auth_Valid(t *testing.T) {
 	email := "maria@gmail.com"
 	password := "password"
-	sessionService := &dummySessionService{cookieName: "session"}
-	dummyAuth := login.NewDummyAuth(email, password)
+	sessionService := mem.NewSessionService("session")
+	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
 	handler := login.New(sessionService, dummyAuth)
 
 	form := url.Values{}
@@ -185,8 +171,8 @@ func TestHandler_Auth_Valid(t *testing.T) {
 func TestHandler_Auth_Valid_No_Auth(t *testing.T) {
 	email := "maria@gmail.com"
 	password := "password"
-	sessionService := &dummySessionService{cookieName: "session"}
-	dummyAuth := login.NewDummyAuth("err"+email, password)
+	sessionService := mem.NewSessionService("session")
+	dummyAuth := mem.NewAuth("err"+email, password)
 	handler := login.New(sessionService, dummyAuth)
 
 	form := url.Values{}
@@ -218,8 +204,8 @@ func TestHandler_Auth_Valid_Redirect(t *testing.T) {
 	newLocation := "/pagar"
 	email := "maria@gmail.com"
 	password := "password"
-	sessionService := &dummySessionService{cookieName: "session"}
-	dummyAuth := login.NewDummyAuth(email, password)
+	sessionService := mem.NewSessionService("session")
+	dummyAuth := mem.NewAuth(email, password)
 	handler := login.New(sessionService, dummyAuth)
 
 	form := url.Values{}

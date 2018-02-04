@@ -2,8 +2,8 @@ package cart_test
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"github.com/miaversa/backend/cart"
+	"github.com/miaversa/backend/mem"
 	"github.com/miaversa/backend/model"
 	"net/http"
 	"net/http/httptest"
@@ -12,41 +12,8 @@ import (
 	"testing"
 )
 
-type dummyStore struct {
-	cookieName string
-	cart       model.Cart
-}
-
-func NewDummyStore(name string) *dummyStore {
-	return &dummyStore{
-		cookieName: name,
-		cart:       model.Cart{Items: []model.CartItem{}},
-	}
-}
-
-func (s *dummyStore) GetCart(r *http.Request) (model.Cart, error) {
-	return s.cart, nil
-}
-
-func (s *dummyStore) SaveCart(w http.ResponseWriter, c model.Cart) error {
-	s.cart = c
-	b, err := json.Marshal(c)
-	if err != nil {
-		panic(err)
-	}
-
-	str := base64.StdEncoding.EncodeToString(b)
-
-	cartCookie := &http.Cookie{Name: s.cookieName, Value: str}
-	http.SetCookie(w, cartCookie)
-	return nil
-}
-
-func (s *dummyStore) DropCart(w http.ResponseWriter) {
-}
-
 func TestHandler_View(t *testing.T) {
-	store := NewDummyStore("mcart")
+	store := mem.NewCartStore("mcart")
 	handler := cart.New(store)
 
 	req, err := http.NewRequest(http.MethodGet, "/", nil)
@@ -64,7 +31,7 @@ func TestHandler_View(t *testing.T) {
 }
 
 func TestHandler_Add_Item_Invalid(t *testing.T) {
-	store := NewDummyStore("mcart")
+	store := mem.NewCartStore("mcart")
 	handler := cart.New(store)
 
 	req, err := http.NewRequest(http.MethodPost, "/", nil)
@@ -88,7 +55,7 @@ func TestHandler_Add_Item_Valid(t *testing.T) {
 	price := "102.3"
 	size := "15"
 
-	store := NewDummyStore("mcart")
+	store := mem.NewCartStore("mcart")
 	handler := cart.New(store)
 
 	form := url.Values{}
@@ -125,7 +92,7 @@ func TestHandler_Add_Item_Valid(t *testing.T) {
 }
 
 func TestHandler_Delete_Item_Invalid(t *testing.T) {
-	store := NewDummyStore("mcart")
+	store := mem.NewCartStore("mcart")
 	handler := cart.New(store)
 
 	form := url.Values{}
@@ -159,7 +126,7 @@ func TestHandler_Delete_Item_Invalid(t *testing.T) {
 }
 
 func TestHandler_Delete_Item(t *testing.T) {
-	store := NewDummyStore("mcart")
+	store := mem.NewCartStore("mcart")
 	handler := cart.New(store)
 
 	sku := "xyz"
@@ -173,7 +140,7 @@ func TestHandler_Delete_Item(t *testing.T) {
 		},
 		Quantity: 1,
 	}
-	store.cart.Items = append(store.cart.Items, i)
+	store.Cart.Items = append(store.Cart.Items, i)
 
 	form := url.Values{}
 	form.Add("_method", "delete")

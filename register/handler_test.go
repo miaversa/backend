@@ -2,6 +2,7 @@ package register_test
 
 import (
 	"github.com/miaversa/backend/customer"
+	"github.com/miaversa/backend/mem"
 	"github.com/miaversa/backend/register"
 	"net/http"
 	"net/http/httptest"
@@ -10,24 +11,9 @@ import (
 	"testing"
 )
 
-type dummySessionService struct {
-	cookieName string
-	email      string
-}
-
-func (s *dummySessionService) Get(r *http.Request) string {
-	return s.email
-}
-
-func (s *dummySessionService) Set(w http.ResponseWriter, session string) error {
-	c := &http.Cookie{Name: s.cookieName, Value: session}
-	http.SetCookie(w, c)
-	return nil
-}
-
 func TestHandler_View(t *testing.T) {
-	sessionService := &dummySessionService{cookieName: "session"}
-	customerService := customer.NewDummyCustomerService()
+	sessionService := mem.NewSessionService("session")
+	customerService := mem.NewCustomerService()
 	handler := register.New(sessionService, customerService)
 
 	req, err := http.NewRequest(http.MethodGet, "/", nil)
@@ -45,9 +31,9 @@ func TestHandler_View(t *testing.T) {
 }
 
 func TestHandler_View_With_Session(t *testing.T) {
-	sessionService := &dummySessionService{cookieName: "session"}
-	sessionService.email = "maria@gmail.com"
-	customerService := customer.NewDummyCustomerService()
+	sessionService := mem.NewSessionService("session")
+	sessionService.Email = "maria@gmail.com"
+	customerService := mem.NewCustomerService()
 	handler := register.New(sessionService, customerService)
 
 	req, err := http.NewRequest(http.MethodGet, "/", nil)
@@ -73,8 +59,8 @@ func TestHandler_View_With_Session(t *testing.T) {
 }
 
 func TestHandler_Register_Invalid(t *testing.T) {
-	sessionService := &dummySessionService{cookieName: "session"}
-	customerService := customer.NewDummyCustomerService()
+	sessionService := mem.NewSessionService("session")
+	customerService := mem.NewCustomerService()
 	handler := register.New(sessionService, customerService)
 
 	form := url.Values{}
@@ -97,8 +83,8 @@ func TestHandler_Register_Invalid(t *testing.T) {
 }
 
 func TestHandler_Register_Valid(t *testing.T) {
-	sessionService := &dummySessionService{cookieName: "session"}
-	customerService := customer.NewDummyCustomerService()
+	sessionService := mem.NewSessionService("session")
+	customerService := mem.NewCustomerService()
 	handler := register.New(sessionService, customerService)
 
 	email := "maria@gmail.com"
@@ -131,8 +117,8 @@ func TestHandler_Register_Valid(t *testing.T) {
 }
 
 func TestHandler_Double_Register(t *testing.T) {
-	sessionService := &dummySessionService{cookieName: "session"}
-	customerService := customer.NewDummyCustomerService()
+	sessionService := mem.NewSessionService("session")
+	customerService := mem.NewCustomerService()
 	handler := register.New(sessionService, customerService)
 
 	email := "maria@gmail.com"

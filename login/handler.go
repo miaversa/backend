@@ -49,7 +49,6 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) view(w http.ResponseWriter, r *http.Request) error {
 	r.ParseForm()
-
 	redirect := DefaultRedirectPath
 	if r.FormValue("redirect") != "" {
 		redirect = r.FormValue("redirect")

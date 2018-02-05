@@ -38,9 +38,15 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) view(w http.ResponseWriter, r *http.Request) error {
+	r.ParseForm()
+	redirect := DefaultRedirectPath
+	if r.FormValue("redirect") != "" {
+		redirect = r.FormValue("redirect")
+	}
+
 	session := h.sessionService.Get(r)
 	if session != "" {
-		http.Redirect(w, r, DefaultRedirectPath, http.StatusFound)
+		http.Redirect(w, r, redirect, http.StatusFound)
 		return nil
 	}
 

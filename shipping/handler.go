@@ -87,7 +87,7 @@ func (h *handler) shipping(w http.ResponseWriter, r *http.Request) (err error) {
 		t.Parse(string(templates.MustAsset(templateFile)))
 		return t.Execute(w, nil)
 	}
-	http.Redirect(w, r, Path, http.StatusFound)
+	http.Redirect(w, r, "/pagar", http.StatusFound)
 
 	return
 }

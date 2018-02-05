@@ -3,6 +3,7 @@ package customer
 type CustomerService interface {
 	Get(email string) (Customer, error)
 	Put(Customer) error
+	GetShippingAddress(string) (ShippingAddress, bool)
 	SetShippingAddress(string, ShippingAddress) error
 }
 

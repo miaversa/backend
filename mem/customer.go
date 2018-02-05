@@ -11,7 +11,10 @@ type memCustomerService struct {
 }
 
 func NewCustomerService() *memCustomerService {
-	return &memCustomerService{customers: map[string]customer.Customer{}}
+	return &memCustomerService{
+		customers: map[string]customer.Customer{},
+		address:   map[string]customer.ShippingAddress{},
+	}
 }
 
 func (s *memCustomerService) Get(email string) (customer.Customer, error) {
@@ -24,6 +27,11 @@ func (s *memCustomerService) Put(c customer.Customer) error {
 	}
 	s.customers[c.Email] = c
 	return nil
+}
+
+func (s *memCustomerService) GetShippingAddress(email string) (customer.ShippingAddress, bool) {
+	customer, ok := s.address[email]
+	return customer, ok
 }
 
 func (s *memCustomerService) SetShippingAddress(email string, sa customer.ShippingAddress) error {

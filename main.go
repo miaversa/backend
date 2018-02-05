@@ -43,7 +43,7 @@ func main() {
 	cartStore := cookie.NewCartStore(viper.GetString("cookie.cart.name"), sc, secure)
 	cartService := cart.New(cartStore)
 	assetService := assets.New()
-	paymentService := payment.New()
+	paymentService := payment.New(sessionService, customerService)
 	registerService := register.New(sessionService, customerService)
 	shippingService := shipping.New(sessionService, customerService)
 

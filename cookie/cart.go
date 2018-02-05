@@ -22,7 +22,7 @@ func NewCartStore(cookieName string, sc *securecookie.SecureCookie, secure bool)
 }
 
 func (s *cartStore) GetCart(r *http.Request) (model.Cart, error) {
-	c := model.Cart{Items: []model.CartItem{}}
+	c := model.Cart{Products: []model.Product{}}
 	cookie, err := r.Cookie(s.cookieName)
 	if err != nil {
 		return c, nil

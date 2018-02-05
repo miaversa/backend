@@ -15,7 +15,7 @@ type memCartStore struct {
 func NewCartStore(name string) *memCartStore {
 	return &memCartStore{
 		cookieName: name,
-		Cart:       model.Cart{Items: []model.CartItem{}},
+		Cart:       model.Cart{Products: []model.Product{}},
 	}
 }
 

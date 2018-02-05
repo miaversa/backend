@@ -6,48 +6,42 @@
 </head>
 <body>
 
-{{define "cartItem"}}
-	<tr>
-		<td class="pa2 tc">
-			<form method="post">
-				<input type="hidden" name="_method" value="delete">
-				<input type="hidden" name="sku" value="{{.Product.SKU}}">
-				<button type="submit">x</button>
-			</form>
-		</td>
-		<td class="pa2 tc">
-			<strong>{{.Product.Name}}</strong><br/>
-			{{range $k, $v := .Product.Options}}
-				{{ if eq $v.Name "size" }}
-				Tamanho: 
-				{{end}}
-				{{$v.Value}}
-			{{end}}
-		</td>
-		<td class="pa2 tc">{{.Product.Price}}</td>
-		<td class="pa2 tc">{{.Quantity}}</td>
-		<td class="pa2 tc">{{.Total}}</td>
-	</tr>
-{{end}}
-
 {{define "cartShipping"}}
 	<tr>
-		<td class="pa2 tc" colspan="4">Frete</td>
-		<td class="pa2 tc">{{printf "%.2f" .}}</td>
+		<td class="ba b--black-10 pa2 tc" colspan="2">Frete</td>
+		<td class="ba b--black-10 pa2 tc">{{printf "%.2f" .}}</td>
 	</tr>
 {{end}}
 
 {{define "cartTotal"}}
 	<tr>
-		<td class="pa2 tc" colspan="4">Total</td>
-		<td class="pa2 tc">{{printf "%.2f" .}}</td>
+		<td class="ba b--black-10 pa2 tc" colspan="2">Total</td>
+		<td class="ba b--black-10 pa2 tc">{{printf "%.2f" .}}</td>
 	</tr>
 {{end}}
 
 {{define "cart"}}
 <table class="collapse ba br2 b--black-10 pv2 ph3">
-	{{range $k, $v := .Items}}
-		{{template "cartItem" $v}}
+	{{range $k, $v := .Products}}
+		<tr>
+			<td class="ba b--black-10 pa2 tc">
+				<form method="post">
+					<input type="hidden" name="_method" value="delete">
+					<input type="hidden" name="index" value="{{$k}}">
+					<button type="submit">x</button>
+				</form>
+			</td>
+			<td class="ba b--black-10 pa2 tc">
+				<strong>{{.Name}}</strong><br/>
+				{{range $n, $m := .Options}}
+					{{ if eq $m.Name "size" }}
+					Tamanho: 
+					{{end}}
+					{{$m.Value}}
+				{{end}}
+			</td>
+			<td class="ba b--black-10 pa2 tc">{{.Price}}</td>
+		</tr>
 	{{end}}
 	{{template "cartShipping" .Shipping}}
 	{{template "cartTotal" .Total}}

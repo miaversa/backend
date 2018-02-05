@@ -53,30 +53,32 @@ func (h *handler) update(w http.ResponseWriter, r *http.Request) (err error) {
 	r.ParseForm()
 	method := r.PostFormValue("_method")
 	if strings.ToLower(method) == "delete" {
-		return h.removeItem(w, r, r.PostFormValue("sku"))
+		index, err := strconv.Atoi(r.PostFormValue("index"))
+		if err != nil {
+			return err
+		}
+		return h.removeItem(w, r, index)
 	}
 	if price, err := strconv.ParseFloat(r.PostFormValue("price"), 64); err == nil {
-		i := model.CartItem{
-			Product: model.Product{
-				SKU:     r.PostFormValue("sku"),
-				Name:    r.PostFormValue("name"),
-				Price:   price,
-				Options: []model.ProductOption{},
-			},
-			Quantity: 1,
+		p := model.Product{
+			SKU:     r.PostFormValue("sku"),
+			Name:    r.PostFormValue("name"),
+			Price:   price,
+			Options: []model.ProductOption{},
 		}
+
 		optSize := r.PostFormValue("option_size")
 		if "" != optSize {
-			i.Product.Options = append(i.Product.Options, model.ProductOption{Name: "size", Value: optSize})
+			p.Options = append(p.Options, model.ProductOption{Name: "size", Value: optSize})
 		}
-		err = h.addItem(w, r, i)
+		err = h.addItem(w, r, p)
 	}
 	return
 }
 
-func (h *handler) addItem(w http.ResponseWriter, r *http.Request, i model.CartItem) (err error) {
+func (h *handler) addItem(w http.ResponseWriter, r *http.Request, p model.Product) (err error) {
 	if c, err := h.store.GetCart(r); err == nil {
-		c.AddItem(i)
+		c.AddProduct(p)
 		if err = h.store.SaveCart(w, c); err == nil {
 			http.Redirect(w, r, Path, http.StatusFound)
 		}
@@ -84,13 +86,9 @@ func (h *handler) addItem(w http.ResponseWriter, r *http.Request, i model.CartIt
 	return
 }
 
-func (h *handler) removeItem(w http.ResponseWriter, r *http.Request, sku string) (err error) {
-	if sku == "" {
-		http.Redirect(w, r, Path, http.StatusFound)
-		return
-	}
+func (h *handler) removeItem(w http.ResponseWriter, r *http.Request, index int) (err error) {
 	if c, err := h.store.GetCart(r); err == nil {
-		c.RemoveItem(sku)
+		c.RemoveProduct(index)
 		if err = h.store.SaveCart(w, c); err == nil {
 			http.Redirect(w, r, Path, http.StatusFound)
 		}

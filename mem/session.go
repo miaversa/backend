@@ -1,26 +1,18 @@
 package mem
 
-import (
-	"net/http"
-)
-
-type memSessionService struct {
-	cookieName string
-	Email      string
+type memSessionStorage struct {
+	ID string
 }
 
-func NewSessionService(name string) *memSessionService {
-	return &memSessionService{
-		cookieName: name,
-	}
+func NewSessionStorage() *memSessionStorage {
+	return &memSessionStorage{}
 }
 
-func (s *memSessionService) Get(r *http.Request) string {
-	return s.Email
+func (s *memSessionStorage) Get() (string, error) {
+	return s.ID, nil
 }
 
-func (s *memSessionService) Set(w http.ResponseWriter, session string) error {
-	c := &http.Cookie{Name: s.cookieName, Value: session}
-	http.SetCookie(w, c)
+func (s *memSessionStorage) Set(id string) error {
+	s.ID = id
 	return nil
 }

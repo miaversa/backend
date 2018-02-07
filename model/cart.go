@@ -6,6 +6,10 @@ type Cart struct {
 	Products []Product `json:"products"`
 }
 
+func NewCart() Cart {
+	return Cart{Products: []Product{}}
+}
+
 // Total returns the total
 func (c Cart) Total() float64 {
 	sum := c.Shipping
@@ -17,11 +21,7 @@ func (c Cart) Total() float64 {
 
 // Quantity returns the item quantity in the cart
 func (c Cart) Quantity() int {
-	sum := 0
-	for _, _ = range c.Products {
-		sum++
-	}
-	return sum
+	return len(c.Products)
 }
 
 // AddItem adds a new item in the cart
@@ -31,7 +31,13 @@ func (c *Cart) AddProduct(product Product) {
 
 // RemoveItem remove an item from the cart
 func (c *Cart) RemoveProduct(index int) {
-	c.Products = append(c.Products[:index], c.Products[index+1:]...)
+	list := []Product{}
+	for k, v := range c.Products {
+		if index != k {
+			list = append(list, v)
+		}
+	}
+	c.Products = list
 }
 
 // ProductOption represents a product variant

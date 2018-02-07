@@ -6,12 +6,20 @@
 </head>
 <body>
 
+	<ul>
+	{{range $k, $v := .FormErrors}}
+		<li>{{$v}}</li>
+	{{end}}
+	</ul>
+
+	<p>{{.GeneralError}}</p>
+
 	<form method="post">
 		<p>Email:<br />
-			<input type="text" name="email" value="">
+			<input type="text" name="email" value="{{.Email}}">
 		</p>
 		<p>Senha:<br />
-			<input type="password" name="password" value="">
+			<input type="password" name="password">
 		</p>
 
 		<p><button type="submit">login</button></p>

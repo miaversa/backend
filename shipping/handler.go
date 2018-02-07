@@ -2,7 +2,7 @@ package shipping
 
 import (
 	"github.com/miaversa/backend/customer"
-	"github.com/miaversa/backend/login"
+	"github.com/miaversa/backend/session"
 	"github.com/miaversa/backend/templates"
 	"github.com/thedevsaddam/govalidator"
 	"html/template"
@@ -16,12 +16,12 @@ var templateFile = "shipping.html"
 var defaultRedirectPath = "/perfil"
 
 type handler struct {
-	sessionService  login.SessionService
+	sessionService  session.SessionService
 	customerService customer.CustomerService
 }
 
 // New creates a new shipping handler
-func New(s login.SessionService, c customer.CustomerService) *handler {
+func New(s session.SessionService, c customer.CustomerService) *handler {
 	return &handler{sessionService: s, customerService: c}
 }
 
@@ -38,7 +38,6 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) view(w http.ResponseWriter, r *http.Request) error {
-	r.ParseForm()
 
 	t := template.New(templateFile)
 	t.Parse(string(templates.MustAsset(templateFile)))
@@ -125,4 +124,7 @@ func validate(r *http.Request) (bool, map[string][]string) {
 
 	errors := v.Validate()
 	return len(errors) == 0, errors
+}
+
+type ShippingForm struct {
 }

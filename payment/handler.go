@@ -2,7 +2,7 @@ package payment
 
 import (
 	"github.com/miaversa/backend/customer"
-	"github.com/miaversa/backend/login"
+	"github.com/miaversa/backend/session"
 	"github.com/miaversa/backend/shipping"
 	"github.com/miaversa/backend/templates"
 	"html/template"
@@ -15,12 +15,12 @@ var Path string = "/pagar"
 var templateFile string = "payment.html"
 
 type handler struct {
-	sessionService  login.SessionService
+	sessionService  session.SessionService
 	customerService customer.CustomerService
 }
 
 // New creates a new payment handler
-func New(session login.SessionService, customer customer.CustomerService) *handler {
+func New(session session.SessionService, customer customer.CustomerService) *handler {
 	return &handler{session, customer}
 }
 

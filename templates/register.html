@@ -5,6 +5,15 @@
 	<link rel="stylesheet" type="text/css" href="/assets/tachyons.min.css" />
 </head>
 <body>
+
+	<ul>
+	{{range $k, $v := .FormErrors}}
+		<li>{{$v}}</li>
+	{{end}}
+	</ul>
+
+	<p>{{.GeneralError}}</p>
+	
 	<form method="post">
 	<p>nome completo<br/>
 		<input type="text" name="name" />

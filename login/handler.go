@@ -1,6 +1,8 @@
 package login
 
 import (
+	"github.com/miaversa/backend/customer"
+	"github.com/miaversa/backend/session"
 	"github.com/miaversa/backend/templates"
 	"github.com/thedevsaddam/govalidator"
 	"html/template"
@@ -15,24 +17,14 @@ var DefaultRedirectPath = "/perfil"
 
 var templateFile = "login.html"
 
-// SessionService defines the session api
-type SessionService interface {
-	Get(r *http.Request) string
-	Set(w http.ResponseWriter, session string) error
-}
-
-type AuthService interface {
-	Validate(email, password string) bool
-}
-
 type handler struct {
-	session     SessionService
-	authService AuthService
+	session         session.SessionService
+	customerService customer.CustomerService
 }
 
 // New creates a new login handler
-func New(session SessionService, auth AuthService) *handler {
-	return &handler{session: session, authService: auth}
+func New(session session.SessionService, customer customer.CustomerService) *handler {
+	return &handler{session: session, customerService: customer}
 }
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -67,21 +59,32 @@ func (h *handler) view(w http.ResponseWriter, r *http.Request) error {
 
 func (h *handler) auth(w http.ResponseWriter, r *http.Request) (err error) {
 	r.ParseForm()
-	email := r.PostFormValue("email")
-	password := r.PostFormValue("password")
+	form := authForm{
+		Email:    r.PostFormValue("email"),
+		Password: r.PostFormValue("password"),
+	}
 
 	valid, errors := validate(r)
-	_ = errors
+	form.FormErrors = errors
 	if !valid {
 		t := template.New(templateFile)
 		t.Parse(string(templates.MustAsset(templateFile)))
-		return t.Execute(w, nil)
+		return t.Execute(w, form)
 	}
 
-	if !h.authService.Validate(email, password) {
+	cust, err := h.customerService.Get(form.Email)
+	if err != nil {
+		form.GeneralError = err.Error()
 		t := template.New(templateFile)
 		t.Parse(string(templates.MustAsset(templateFile)))
-		return t.Execute(w, nil)
+		return t.Execute(w, form)
+	}
+
+	if cust.Password != form.Password {
+		form.GeneralError = "senha errada"
+		t := template.New(templateFile)
+		t.Parse(string(templates.MustAsset(templateFile)))
+		return t.Execute(w, form)
 	}
 
 	redirect := Path + "?redirect=" + DefaultRedirectPath
@@ -89,7 +92,7 @@ func (h *handler) auth(w http.ResponseWriter, r *http.Request) (err error) {
 		redirect = r.FormValue("redirect")
 	}
 
-	h.session.Set(w, email)
+	h.session.Set(w, form.Email)
 	http.Redirect(w, r, redirect, http.StatusFound)
 	return
 }
@@ -114,4 +117,11 @@ func validate(r *http.Request) (bool, map[string][]string) {
 
 	errors := v.Validate()
 	return len(errors) == 0, errors
+}
+
+type authForm struct {
+	Email        string
+	Password     string
+	FormErrors   map[string][]string
+	GeneralError string
 }

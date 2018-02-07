@@ -12,8 +12,8 @@ import (
 
 func TestHandler_View(t *testing.T) {
 	sessionService := mem.NewSessionService("session")
-	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
-	handler := login.New(sessionService, dummyAuth)
+	customerService := mem.NewCustomerService()
+	handler := login.New(sessionService, customerService)
 
 	req, err := http.NewRequest(http.MethodGet, "/", nil)
 	if err != nil {
@@ -32,8 +32,8 @@ func TestHandler_View(t *testing.T) {
 func TestHandler_View_With_Session(t *testing.T) {
 	sessionService := mem.NewSessionService("session")
 	sessionService.Email = "maria@gmail.com"
-	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
-	handler := login.New(sessionService, dummyAuth)
+	customerService := mem.NewCustomerService()
+	handler := login.New(sessionService, customerService)
 
 	req, err := http.NewRequest(http.MethodGet, "/", nil)
 	if err != nil {
@@ -61,8 +61,8 @@ func TestHandler_View_With_Session(t *testing.T) {
 
 func TestHandler_View_With_Redirect(t *testing.T) {
 	sessionService := mem.NewSessionService("session")
-	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
-	handler := login.New(sessionService, dummyAuth)
+	customerService := mem.NewCustomerService()
+	handler := login.New(sessionService, customerService)
 
 	req, err := http.NewRequest(http.MethodGet, "/?redirect=/perfil", nil)
 	if err != nil {
@@ -82,8 +82,8 @@ func TestHandler_View_With_Session_With_Redirect(t *testing.T) {
 	newLocation := "/pagar"
 	sessionService := mem.NewSessionService("session")
 	sessionService.Email = "maria@gmail.com"
-	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
-	handler := login.New(sessionService, dummyAuth)
+	customerService := mem.NewCustomerService()
+	handler := login.New(sessionService, customerService)
 
 	req, err := http.NewRequest(http.MethodGet, "/?redirect="+newLocation, nil)
 	if err != nil {
@@ -111,8 +111,8 @@ func TestHandler_View_With_Session_With_Redirect(t *testing.T) {
 
 func TestHandler_Auth_Invalid(t *testing.T) {
 	sessionService := mem.NewSessionService("session")
-	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
-	handler := login.New(sessionService, dummyAuth)
+	customerService := mem.NewCustomerService()
+	handler := login.New(sessionService, customerService)
 
 	req, err := http.NewRequest(http.MethodPost, "/", nil)
 	if err != nil {
@@ -132,8 +132,8 @@ func TestHandler_Auth_Valid(t *testing.T) {
 	email := "maria@gmail.com"
 	password := "password"
 	sessionService := mem.NewSessionService("session")
-	dummyAuth := mem.NewAuth("maria@gmail.com", "password")
-	handler := login.New(sessionService, dummyAuth)
+	customerService := mem.NewCustomerService()
+	handler := login.New(sessionService, customerService)
 
 	form := url.Values{}
 	form.Add("email", email)
@@ -172,8 +172,8 @@ func TestHandler_Auth_Valid_No_Auth(t *testing.T) {
 	email := "maria@gmail.com"
 	password := "password"
 	sessionService := mem.NewSessionService("session")
-	dummyAuth := mem.NewAuth("err"+email, password)
-	handler := login.New(sessionService, dummyAuth)
+	customerService := mem.NewCustomerService()
+	handler := login.New(sessionService, customerService)
 
 	form := url.Values{}
 	form.Add("email", email)
@@ -205,8 +205,8 @@ func TestHandler_Auth_Valid_Redirect(t *testing.T) {
 	email := "maria@gmail.com"
 	password := "password"
 	sessionService := mem.NewSessionService("session")
-	dummyAuth := mem.NewAuth(email, password)
-	handler := login.New(sessionService, dummyAuth)
+	customerService := mem.NewCustomerService()
+	handler := login.New(sessionService, customerService)
 
 	form := url.Values{}
 	form.Add("email", email)

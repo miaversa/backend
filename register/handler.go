@@ -2,7 +2,7 @@ package register
 
 import (
 	"github.com/miaversa/backend/customer"
-	"github.com/miaversa/backend/login"
+	"github.com/miaversa/backend/session"
 	"github.com/miaversa/backend/templates"
 	"github.com/thedevsaddam/govalidator"
 	"html/template"
@@ -16,12 +16,12 @@ var DefaultRedirectPath = "/pagar"
 var templateFile = "register.html"
 
 type handler struct {
-	sessionService  login.SessionService
+	sessionService  session.SessionService
 	customerService customer.CustomerService
 }
 
 // New creates a new register handler
-func New(s login.SessionService, c customer.CustomerService) *handler {
+func New(s session.SessionService, c customer.CustomerService) *handler {
 	return &handler{sessionService: s, customerService: c}
 }
 
@@ -57,32 +57,34 @@ func (h *handler) view(w http.ResponseWriter, r *http.Request) error {
 
 func (h *handler) register(w http.ResponseWriter, r *http.Request) (err error) {
 	r.ParseForm()
-	email := r.PostFormValue("email")
-	name := r.PostFormValue("name")
-	password := r.PostFormValue("password")
+	form := registerForm{
+		Name:     r.PostFormValue("name"),
+		Email:    r.PostFormValue("email"),
+		Password: r.PostFormValue("password"),
+	}
 
 	valid, errors := validate(r)
-	_ = errors
+	form.FormErrors = errors
 	if !valid {
 		t := template.New(templateFile)
 		t.Parse(string(templates.MustAsset(templateFile)))
-		return t.Execute(w, nil)
+		return t.Execute(w, form)
 	}
 
 	c := customer.Customer{
-		Email:    email,
-		Name:     name,
-		Password: password,
+		Email:    form.Email,
+		Name:     form.Name,
+		Password: form.Password,
 	}
 
 	if err := h.customerService.Put(c); err != nil {
+		form.GeneralError = err.Error()
 		t := template.New(templateFile)
 		t.Parse(string(templates.MustAsset(templateFile)))
-		return t.Execute(w, nil)
+		return t.Execute(w, form)
 	}
-	h.sessionService.Set(w, email)
+	h.sessionService.Set(w, form.Email)
 	http.Redirect(w, r, Path, http.StatusFound)
-
 	return
 }
 
@@ -107,4 +109,12 @@ func validate(r *http.Request) (bool, map[string][]string) {
 
 	errors := v.Validate()
 	return len(errors) == 0, errors
+}
+
+type registerForm struct {
+	Name         string
+	Email        string
+	Password     string
+	FormErrors   map[string][]string
+	GeneralError string
 }

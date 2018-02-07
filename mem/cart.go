@@ -1,41 +1,30 @@
 package mem
 
 import (
-	"encoding/base64"
-	"encoding/json"
+	"github.com/miaversa/backend/handler"
 	"github.com/miaversa/backend/model"
-	"net/http"
 )
 
-type memCartStore struct {
-	cookieName string
-	Cart       model.Cart
+type memCartStorage struct {
+	Cart model.Cart
 }
 
-func NewCartStore(name string) *memCartStore {
-	return &memCartStore{
-		cookieName: name,
-		Cart:       model.Cart{Products: []model.Product{}},
+func NewCartStorage() handler.CartStorage {
+	return &memCartStorage{
+		Cart: model.Cart{Products: []model.Product{}},
 	}
 }
 
-func (s *memCartStore) GetCart(r *http.Request) (model.Cart, error) {
+func (s *memCartStorage) GetCart() (model.Cart, error) {
 	return s.Cart, nil
 }
 
-func (s *memCartStore) SaveCart(w http.ResponseWriter, c model.Cart) error {
+func (s *memCartStorage) SaveCart(c model.Cart) error {
 	s.Cart = c
-	b, err := json.Marshal(c)
-	if err != nil {
-		panic(err)
-	}
-
-	str := base64.StdEncoding.EncodeToString(b)
-
-	cartCookie := &http.Cookie{Name: s.cookieName, Value: str}
-	http.SetCookie(w, cartCookie)
 	return nil
 }
 
-func (s *memCartStore) DropCart(w http.ResponseWriter) {
+func (s *memCartStorage) DropCart() error {
+	s.Cart.Products = []model.Product{}
+	return nil
 }

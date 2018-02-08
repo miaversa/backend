@@ -2,7 +2,7 @@ package mem_test
 
 import (
 	"github.com/miaversa/backend/mem"
-	"github.com/miaversa/backend/model"
+	"github.com/miaversa/backend/product"
 	"testing"
 )
 
@@ -14,12 +14,12 @@ func TestCartStorage(t *testing.T) {
 	}
 	sku, name, price := "sku", "name", 10.5
 	optKey, optVal := "size", "15"
-	p := model.Product{
+	p := product.Product{
 		SKU:   sku,
 		Name:  name,
 		Price: price,
-		Options: []model.ProductOption{
-			model.ProductOption{Name: optKey, Value: optVal},
+		Options: []product.Option{
+			product.Option{Name: optKey, Value: optVal},
 		},
 	}
 	c.AddProduct(p)

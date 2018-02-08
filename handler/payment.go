@@ -1,5 +1,6 @@
-package payment
+package handler
 
+/*
 import (
 	"github.com/miaversa/backend/customer"
 	"github.com/miaversa/backend/session"
@@ -57,3 +58,4 @@ func (h *handler) view(w http.ResponseWriter, r *http.Request) error {
 func (h *handler) pay(w http.ResponseWriter, r *http.Request) (err error) {
 	return nil
 }
+*/

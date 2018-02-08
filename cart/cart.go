@@ -1,13 +1,17 @@
-package model
+package cart
+
+import (
+	"github.com/miaversa/backend/product"
+)
 
 // Cart stores the cart
 type Cart struct {
-	Shipping float64   `json:"shipping"`
-	Products []Product `json:"products"`
+	Shipping float64           `json:"shipping"`
+	Products []product.Product `json:"products"`
 }
 
-func NewCart() Cart {
-	return Cart{Products: []Product{}}
+func New() Cart {
+	return Cart{Products: []product.Product{}}
 }
 
 // Total returns the total
@@ -25,31 +29,17 @@ func (c Cart) Quantity() int {
 }
 
 // AddItem adds a new item in the cart
-func (c *Cart) AddProduct(product Product) {
+func (c *Cart) AddProduct(product product.Product) {
 	c.Products = append(c.Products, product)
 }
 
 // RemoveItem remove an item from the cart
 func (c *Cart) RemoveProduct(index int) {
-	list := []Product{}
+	list := []product.Product{}
 	for k, v := range c.Products {
 		if index != k {
 			list = append(list, v)
 		}
 	}
 	c.Products = list
-}
-
-// ProductOption represents a product variant
-type ProductOption struct {
-	Name  string `json:"key"`
-	Value string `json:"value"`
-}
-
-// Product is a buyable product
-type Product struct {
-	SKU     string          `json:"sku"`
-	Name    string          `json:"name"`
-	Price   float64         `json:"price"`
-	Options []ProductOption `json:"options"`
 }

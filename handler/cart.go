@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"github.com/miaversa/backend/model"
+	"github.com/miaversa/backend/cart"
+	"github.com/miaversa/backend/product"
 	"github.com/miaversa/backend/templates"
 	"html/template"
 	"net/http"
@@ -10,14 +11,14 @@ import (
 )
 
 type cartHandler struct {
-	cartStorage CartStorage
+	cartStorage cart.CartStorage
 }
 
-func NewCartHandler(cartStorage CartStorage) *cartHandler {
+func NewCartHandler(cartStorage cart.CartStorage) *cartHandler {
 	return &cartHandler{cartStorage}
 }
 
-func (h *cartHandler) GetCart(w http.ResponseWriter, r *http.Request) {
+func (h *cartHandler) GetCart(w http.ResponseWriter, r *http.Request) error {
 	c, err := h.cartStorage.GetCart()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -29,6 +30,7 @@ func (h *cartHandler) GetCart(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
+	return nil
 }
 
 func (h *cartHandler) Update(w http.ResponseWriter, r *http.Request) error {
@@ -56,7 +58,7 @@ func (h *cartHandler) Update(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func (h *cartHandler) AddProduct(w http.ResponseWriter, r *http.Request, c model.Cart) (model.Cart, error) {
+func (h *cartHandler) AddProduct(w http.ResponseWriter, r *http.Request, c cart.Cart) (cart.Cart, error) {
 	p, err := extractProduct(r)
 	if err != nil {
 		return c, err
@@ -66,7 +68,7 @@ func (h *cartHandler) AddProduct(w http.ResponseWriter, r *http.Request, c model
 
 }
 
-func (h *cartHandler) DeleteProduct(w http.ResponseWriter, r *http.Request, c model.Cart) (model.Cart, error) {
+func (h *cartHandler) DeleteProduct(w http.ResponseWriter, r *http.Request, c cart.Cart) (cart.Cart, error) {
 	index, err := strconv.Atoi(r.PostFormValue("index"))
 	if err != nil {
 		return c, err
@@ -75,20 +77,20 @@ func (h *cartHandler) DeleteProduct(w http.ResponseWriter, r *http.Request, c mo
 	return c, nil
 }
 
-func extractProduct(r *http.Request) (model.Product, error) {
+func extractProduct(r *http.Request) (product.Product, error) {
 	price, err := strconv.ParseFloat(r.PostFormValue("price"), 64)
 	if err != nil {
-		return model.Product{}, err
+		return product.Product{}, err
 	}
-	p := model.Product{
+	p := product.Product{
 		SKU:     r.PostFormValue("sku"),
 		Name:    r.PostFormValue("name"),
 		Price:   price,
-		Options: []model.ProductOption{},
+		Options: []product.Option{},
 	}
 	optSize := r.PostFormValue("option_size")
 	if "" != optSize {
-		p.Options = append(p.Options, model.ProductOption{Name: "size", Value: optSize})
+		p.Options = append(p.Options, product.Option{Name: "size", Value: optSize})
 	}
 
 	return p, nil

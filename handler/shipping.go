@@ -1,5 +1,6 @@
-package shipping
+package handler
 
+/*
 import (
 	"github.com/miaversa/backend/customer"
 	"github.com/miaversa/backend/session"
@@ -128,3 +129,4 @@ func validate(r *http.Request) (bool, map[string][]string) {
 
 type ShippingForm struct {
 }
+*/

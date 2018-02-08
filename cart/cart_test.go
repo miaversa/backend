@@ -1,12 +1,13 @@
-package model_test
+package cart_test
 
 import (
-	"github.com/miaversa/backend/model"
+	"github.com/miaversa/backend/cart"
+	"github.com/miaversa/backend/product"
 	"testing"
 )
 
 func TestCart(t *testing.T) {
-	c := model.NewCart()
+	c := cart.New()
 	if c.Products == nil {
 		t.Fatal("lista de produtos não inicializada")
 	}
@@ -19,12 +20,12 @@ func TestCart(t *testing.T) {
 }
 
 func TestCartAddProduct(t *testing.T) {
-	c := model.NewCart()
-	p := model.Product{
+	c := cart.New()
+	p := product.Product{
 		SKU:     "sku",
 		Name:    "name",
 		Price:   100,
-		Options: []model.ProductOption{model.ProductOption{Name: "opt", Value: "val"}},
+		Options: []product.Option{product.Option{Name: "opt", Value: "val"}},
 	}
 	c.AddProduct(p)
 	if 100 != c.Total() {
@@ -39,18 +40,18 @@ func TestCartAddProduct(t *testing.T) {
 }
 
 func TestCartRemoveProduct(t *testing.T) {
-	c := model.NewCart()
-	p := model.Product{
+	c := cart.New()
+	p := product.Product{
 		SKU:     "sku",
 		Name:    "name",
 		Price:   100,
-		Options: []model.ProductOption{model.ProductOption{Name: "opt", Value: "val"}},
+		Options: []product.Option{product.Option{Name: "opt", Value: "val"}},
 	}
-	p2 := model.Product{
+	p2 := product.Product{
 		SKU:     "sku2",
 		Name:    "name2",
 		Price:   100,
-		Options: []model.ProductOption{model.ProductOption{Name: "opt2", Value: "val2"}},
+		Options: []product.Option{product.Option{Name: "opt2", Value: "val2"}},
 	}
 	c.AddProduct(p)
 	c.RemoveProduct(0)

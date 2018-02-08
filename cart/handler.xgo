@@ -1,5 +1,6 @@
 package cart
 
+/*
 import (
 	"github.com/miaversa/backend/model"
 	"github.com/miaversa/backend/templates"
@@ -95,3 +96,4 @@ func (h *handler) removeItem(w http.ResponseWriter, r *http.Request, index int) 
 	}
 	return err
 }
+*/

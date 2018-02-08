@@ -1,5 +1,6 @@
-package login
+package handler
 
+/*
 import (
 	"github.com/miaversa/backend/customer"
 	"github.com/miaversa/backend/session"
@@ -125,3 +126,4 @@ type authForm struct {
 	FormErrors   map[string][]string
 	GeneralError string
 }
+*/

@@ -1,30 +1,30 @@
 package mem
 
 import (
-	"github.com/miaversa/backend/handler"
-	"github.com/miaversa/backend/model"
+	"github.com/miaversa/backend/cart"
+	"github.com/miaversa/backend/product"
 )
 
 type memCartStorage struct {
-	Cart model.Cart
+	Cart cart.Cart
 }
 
-func NewCartStorage() handler.CartStorage {
+func NewCartStorage() *memCartStorage {
 	return &memCartStorage{
-		Cart: model.Cart{Products: []model.Product{}},
+		Cart: cart.Cart{Products: []product.Product{}},
 	}
 }
 
-func (s *memCartStorage) GetCart() (model.Cart, error) {
+func (s *memCartStorage) GetCart() (cart.Cart, error) {
 	return s.Cart, nil
 }
 
-func (s *memCartStorage) SaveCart(c model.Cart) error {
+func (s *memCartStorage) SaveCart(c cart.Cart) error {
 	s.Cart = c
 	return nil
 }
 
 func (s *memCartStorage) DropCart() error {
-	s.Cart.Products = []model.Product{}
+	s.Cart.Products = []product.Product{}
 	return nil
 }

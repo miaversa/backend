@@ -1,5 +1,6 @@
 package cookie
 
+/*
 import (
 	"github.com/gorilla/securecookie"
 	"net/http"
@@ -46,3 +47,4 @@ func (s *sessionService) createCookie(value string) *http.Cookie {
 		HttpOnly: true,
 	}
 }
+*/

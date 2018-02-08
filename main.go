@@ -16,8 +16,8 @@ func main() {
 	cartStorage := mem.NewCartStorage()
 	cartHandler := handler.NewCartHandler(cartStorage)
 
-	r.Get("/carrinho", cartHandler.GetCart)
-	r.Post("/carrinho", cartHandler.AddProduct)
+	r.Get("/carrinho", handler.HandlerError(cartHandler.GetCart))
+	r.Post("/carrinho", handler.HandlerError(cartHandler.Update))
 
 	http.ListenAndServe(":8080", r)
 }

@@ -1,5 +1,6 @@
 package cookie
 
+/*
 import (
 	"github.com/gorilla/securecookie"
 	"github.com/miaversa/backend/model"
@@ -58,3 +59,4 @@ func (s *cartStore) createCookie(value string) *http.Cookie {
 		HttpOnly: true,
 	}
 }
+*/

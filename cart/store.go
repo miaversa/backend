@@ -1,5 +1,6 @@
 package cart
 
+/*
 import (
 	"github.com/miaversa/backend/model"
 )
@@ -10,3 +11,4 @@ type CartStore interface {
 	SaveCart(c model.Cart) error
 	DropCart()
 }
+*/

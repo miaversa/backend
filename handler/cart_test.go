@@ -75,7 +75,6 @@ func TestHandler_Add_Valid(t *testing.T) {
 	handler := handler.NewCartHandler(store)
 
 	sku := "x"
-
 	form := url.Values{}
 	form.Add("sku", sku)
 	form.Add("name", "x")

@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func HandlerError(h func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
+func HandlerError(h HandlerFuncErr) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		err := h(w, r)
 		if err != nil {

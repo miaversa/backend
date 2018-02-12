@@ -1,36 +1,32 @@
 package handler_test
 
-/*
 import (
-	"github.com/miaversa/backend/customer"
+	"github.com/miaversa/backend/handler"
 	"github.com/miaversa/backend/mem"
-	"github.com/miaversa/backend/register"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
-	"strings"
+	//"net/url"
+	//"strings"
 	"testing"
 )
 
 func TestHandler_View(t *testing.T) {
-	sessionService := mem.NewSessionService("session")
-	customerService := mem.NewCustomerService()
-	handler := register.New(sessionService, customerService)
-
-	req, err := http.NewRequest(http.MethodGet, "/", nil)
+	sessionStorage := mem.NewSessionStorage()
+	customerStorage := mem.NewCustomerStorage()
+	handler := handler.NewRegisterHandler(sessionStorage, customerStorage)
+	req, _ := http.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	err := handler.View(rr, req)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
 	if rr.Code != http.StatusOK {
 		t.Fatalf("Received non-200 response: %d\n", rr.Code)
 	}
 	// TODO: check response body
 }
 
+/*
 func TestHandler_View_With_Session(t *testing.T) {
 	sessionService := mem.NewSessionService("session")
 	sessionService.Email = "maria@gmail.com"

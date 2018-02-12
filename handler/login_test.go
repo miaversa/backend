@@ -1,8 +1,8 @@
 package handler_test
 
-/*
 import (
-	"github.com/miaversa/backend/login"
+	"github.com/miaversa/backend/customer"
+	"github.com/miaversa/backend/handler"
 	"github.com/miaversa/backend/mem"
 	"net/http"
 	"net/http/httptest"
@@ -11,231 +11,112 @@ import (
 	"testing"
 )
 
-func TestHandler_View(t *testing.T) {
-	sessionService := mem.NewSessionService("session")
-	customerService := mem.NewCustomerService()
-	handler := login.New(sessionService, customerService)
-
-	req, err := http.NewRequest(http.MethodGet, "/", nil)
+func TestLogin_View(t *testing.T) {
+	sessionStorage := mem.NewSessionStorage()
+	customerStorage := mem.NewCustomerStorage()
+	handler := handler.NewLoginHandler(sessionStorage, customerStorage)
+	req, _ := http.NewRequest(http.MethodGet, "/", nil)
+	rr := httptest.NewRecorder()
+	err := handler.View(rr, req)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
 
 	if rr.Code != http.StatusOK {
-		t.Fatalf("Received non-200 response: %d\n", rr.Code)
+		t.Fatal("esperado codigo 200")
 	}
-	// TODO: check response body
 }
 
-func TestHandler_View_With_Session(t *testing.T) {
-	sessionService := mem.NewSessionService("session")
-	sessionService.Email = "maria@gmail.com"
-	customerService := mem.NewCustomerService()
-	handler := login.New(sessionService, customerService)
-
-	req, err := http.NewRequest(http.MethodGet, "/", nil)
+func TestLogin_View_With_Session_Redirect(t *testing.T) {
+	sessionStorage := mem.NewSessionStorage()
+	sessionStorage.Set("maria@gmail.com")
+	customerStorage := mem.NewCustomerStorage()
+	handler := handler.NewLoginHandler(sessionStorage, customerStorage)
+	req, _ := http.NewRequest(http.MethodGet, "/login?redirect=/pagar", nil)
+	rr := httptest.NewRecorder()
+	err := handler.View(rr, req)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
 	if rr.Code != http.StatusFound {
-		t.Fatalf("Received non-200 response: %d\n", rr.Code)
+		t.Fatal("esperado codigo 302")
 	}
-
-	location, ok := rr.HeaderMap["Location"]
-	if !ok {
-		t.Fatal("location not found in the header")
-	}
-
-	locationString := location[0]
-
-	if locationString != login.DefaultRedirectPath {
-		t.Fatal("location mismatch")
+	if rr.Header().Get("Location") != "/pagar" {
+		t.Fatal("redirect invalido")
 	}
 }
 
-func TestHandler_View_With_Redirect(t *testing.T) {
-	sessionService := mem.NewSessionService("session")
-	customerService := mem.NewCustomerService()
-	handler := login.New(sessionService, customerService)
-
-	req, err := http.NewRequest(http.MethodGet, "/?redirect=/perfil", nil)
+func TestLogin_Auth_With_Session(t *testing.T) {
+	sessionStorage := mem.NewSessionStorage()
+	sessionStorage.Set("maria@gmail.com")
+	customerStorage := mem.NewCustomerStorage()
+	handler := handler.NewLoginHandler(sessionStorage, customerStorage)
+	req, _ := http.NewRequest(http.MethodGet, "/login?redirect=/pagar", nil)
+	rr := httptest.NewRecorder()
+	err := handler.Auth(rr, req)
 	if err != nil {
 		t.Fatal(err)
 	}
-
+	if rr.Code != http.StatusFound {
+		t.Fatal("esperado codigo 302")
+	}
+	if rr.Header().Get("Location") != "/pagar" {
+		t.Fatal("redirect invalido")
+	}
+}
+func TestLogin_Auth_With_Form_Error(t *testing.T) {
+	sessionStorage := mem.NewSessionStorage()
+	customerStorage := mem.NewCustomerStorage()
+	handler := handler.NewLoginHandler(sessionStorage, customerStorage)
+	req, _ := http.NewRequest(http.MethodGet, "/login?redirect=/pagar", nil)
 	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
+	err := handler.Auth(rr, req)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if rr.Code != http.StatusOK {
-		t.Fatalf("Received non-200 response: %d\n", rr.Code)
-	}
-	// TODO: check response body
-}
-
-func TestHandler_View_With_Session_With_Redirect(t *testing.T) {
-	newLocation := "/pagar"
-	sessionService := mem.NewSessionService("session")
-	sessionService.Email = "maria@gmail.com"
-	customerService := mem.NewCustomerService()
-	handler := login.New(sessionService, customerService)
-
-	req, err := http.NewRequest(http.MethodGet, "/?redirect="+newLocation, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	if rr.Code != http.StatusFound {
-		t.Fatalf("Received non-200 response: %d\n", rr.Code)
-	}
-
-	location, ok := rr.HeaderMap["Location"]
-	if !ok {
-		t.Fatal("location not found in the header")
-	}
-
-	locationString := location[0]
-
-	if locationString != newLocation {
-		t.Fatal("location mismatch")
+		t.Fatal("esperado codigo 200")
 	}
 }
 
-func TestHandler_Auth_Invalid(t *testing.T) {
-	sessionService := mem.NewSessionService("session")
-	customerService := mem.NewCustomerService()
-	handler := login.New(sessionService, customerService)
-
-	req, err := http.NewRequest(http.MethodPost, "/", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	if rr.Code != 200 {
-		t.Fatalf("Received non-200 response: %d\n", rr.Code)
-	}
-	// TODO: check response body
-}
-
-func TestHandler_Auth_Valid(t *testing.T) {
-	email := "maria@gmail.com"
-	password := "password"
-	sessionService := mem.NewSessionService("session")
-	customerService := mem.NewCustomerService()
-	handler := login.New(sessionService, customerService)
-
+func TestLogin_Auth_With_Login_OK(t *testing.T) {
+	sessionStorage := mem.NewSessionStorage()
+	customerStorage := mem.NewCustomerStorage()
+	customerStorage.Put(customer.Customer{Email: "maria@gmail.com", Name: "Maria", Password: "123456"})
+	handler := handler.NewLoginHandler(sessionStorage, customerStorage)
 	form := url.Values{}
-	form.Add("email", email)
-	form.Add("password", password)
-
-	req, err := http.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
-
+	form.Add("email", "maria@gmail.com")
+	form.Add("password", "123456")
+	req, _ := http.NewRequest(http.MethodPost, "/login?redirect=/pagar", strings.NewReader(form.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	err := handler.Auth(rr, req)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
 	if rr.Code != http.StatusFound {
-		t.Fatalf("Received non-200 response: %d\n", rr.Code)
+		t.Fatal("esperado redirect")
 	}
-
-	cookie := rr.Header().Get("Set-Cookie")
-	if cookie != "session="+email {
-		t.Fatal("cookie error")
-	}
-
-	location, ok := rr.HeaderMap["Location"]
-	if !ok {
-		t.Fatal("location not found in the header")
-	}
-	locationString := location[0]
-	if locationString != login.Path+"?redirect="+login.DefaultRedirectPath {
-		t.Fatal("location mismatch")
+	if rr.Header().Get("Location") != "/pagar" {
+		t.Fatal("redirect error")
 	}
 }
-
-func TestHandler_Auth_Valid_No_Auth(t *testing.T) {
-	email := "maria@gmail.com"
-	password := "password"
-	sessionService := mem.NewSessionService("session")
-	customerService := mem.NewCustomerService()
-	handler := login.New(sessionService, customerService)
-
+func TestLogin_Auth_With_Login_Invalid_Password(t *testing.T) {
+	sessionStorage := mem.NewSessionStorage()
+	customerStorage := mem.NewCustomerStorage()
+	customerStorage.Put(customer.Customer{Email: "maria@gmail.com", Name: "Maria", Password: "123456"})
+	handler := handler.NewLoginHandler(sessionStorage, customerStorage)
 	form := url.Values{}
-	form.Add("email", email)
-	form.Add("password", password)
-
-	req, err := http.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
-
+	form.Add("email", "maria@gmail.com")
+	form.Add("password", "123456x")
+	req, _ := http.NewRequest(http.MethodPost, "/login?redirect=/pagar", strings.NewReader(form.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	rr := httptest.NewRecorder()
+	err := handler.Auth(rr, req)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
 	if rr.Code != http.StatusOK {
-		t.Fatalf("Received non-200 response: %d\n", rr.Code)
-	}
-
-	cookie := rr.Header().Get("Set-Cookie")
-	if cookie != "" {
-		t.Fatal("invalid cookie set")
-	}
-	// TODO: check body
-}
-
-func TestHandler_Auth_Valid_Redirect(t *testing.T) {
-	newLocation := "/pagar"
-	email := "maria@gmail.com"
-	password := "password"
-	sessionService := mem.NewSessionService("session")
-	customerService := mem.NewCustomerService()
-	handler := login.New(sessionService, customerService)
-
-	form := url.Values{}
-	form.Add("email", email)
-	form.Add("password", password)
-
-	req, err := http.NewRequest(http.MethodPost, "/?redirect="+newLocation, strings.NewReader(form.Encode()))
-
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-
-	if rr.Code != http.StatusFound {
-		t.Fatalf("Received non-200 response: %d\n", rr.Code)
-	}
-
-	location, ok := rr.HeaderMap["Location"]
-	if !ok {
-		t.Fatal("location not found in the header")
-	}
-
-	locationString := location[0]
-
-	if locationString != newLocation {
-		t.Fatal("location mismatch")
+		t.Fatal("esperado codigo 200")
 	}
 }
-*/

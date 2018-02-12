@@ -1,63 +1,39 @@
 package handler
 
-/*
 import (
 	"github.com/miaversa/backend/customer"
 	"github.com/miaversa/backend/session"
 	"github.com/miaversa/backend/templates"
-	"github.com/thedevsaddam/govalidator"
+	//"github.com/thedevsaddam/govalidator"
 	"html/template"
 	"net/http"
 )
 
-// Path for the routing
-var Path string = "/cadastro"
-var DefaultRedirectPath = "/pagar"
-
-var templateFile = "register.html"
-
-type handler struct {
+type registerHandler struct {
 	sessionService  session.SessionService
 	customerService customer.CustomerService
 }
 
 // New creates a new register handler
-func New(s session.SessionService, c customer.CustomerService) *handler {
-	return &handler{sessionService: s, customerService: c}
+func NewRegisterHandler(s session.SessionService, c customer.CustomerService) *registerHandler {
+	return &registerHandler{sessionService: s, customerService: c}
 }
 
-func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		if err := h.view(w, r); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-	} else {
-		if err := h.register(w, r); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-	}
-}
-
-func (h *handler) view(w http.ResponseWriter, r *http.Request) error {
-	r.ParseForm()
-	redirect := DefaultRedirectPath
-	if r.FormValue("redirect") != "" {
-		redirect = r.FormValue("redirect")
-	}
-
-	session := h.sessionService.Get(r)
-	if session != "" {
-		http.Redirect(w, r, redirect, http.StatusFound)
-		return nil
-	}
-
-	t := template.New(templateFile)
-	t.Parse(string(templates.MustAsset(templateFile)))
+func (h *registerHandler) View(w http.ResponseWriter, r *http.Request) error {
+	t := template.New("register.html")
+	t.Parse(string(templates.MustAsset("register.html")))
 	return t.Execute(w, nil)
 }
 
-func (h *handler) register(w http.ResponseWriter, r *http.Request) (err error) {
-	r.ParseForm()
+/*
+func (h *registerHandler) register(w http.ResponseWriter, r *http.Request) (err error) {
+	err, ok := redirectIfNeeded(w, r, h.sessionService)
+	if err != nil {
+		return err
+	}
+	if ok {
+		return nil
+	}
 	form := registerForm{
 		Name:     r.PostFormValue("name"),
 		Email:    r.PostFormValue("email"),

@@ -3,6 +3,7 @@ package handler_test
 import (
 	"github.com/miaversa/backend/handler"
 	"github.com/miaversa/backend/mem"
+	"github.com/miaversa/backend/product"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -10,10 +11,9 @@ import (
 	"testing"
 )
 
-func TestHandler_View(t *testing.T) {
+func TestCart_View(t *testing.T) {
 	store := mem.NewCartStorage()
 	handler := handler.NewCartHandler(store)
-
 	req, _ := http.NewRequest(http.MethodGet, "/", nil)
 	rr := httptest.NewRecorder()
 	handler.GetCart(rr, req)
@@ -23,38 +23,26 @@ func TestHandler_View(t *testing.T) {
 	// TODO: check response body
 }
 
-func TestHandler_Delete_Invalid(t *testing.T) {
+func TestCart_Delete_Invalid(t *testing.T) {
 	store := mem.NewCartStorage()
 	handler := handler.NewCartHandler(store)
-
 	form := url.Values{}
 	form.Add("_method", "delete")
 	req, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
 	rr := httptest.NewRecorder()
-	c, _ := store.GetCart()
-	_, err := handler.DeleteProduct(rr, req, c)
+	err := handler.Update(rr, req)
 	if err == nil {
-		t.Fatal("esperava um erro")
+		t.Fatal("um erro era esperado")
 	}
-	form.Add("index", "asd")
-	req, _ = http.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
-	rr = httptest.NewRecorder()
-	c, _ = store.GetCart()
-	_, err = handler.DeleteProduct(rr, req, c)
-	if err == nil {
-		t.Fatal("esperava um erro")
-	}
-
 }
 
 func TestHandler_Delete_Valid(t *testing.T) {
 	store := mem.NewCartStorage()
 	handler := handler.NewCartHandler(store)
-
+	c, _ := store.GetCart()
+	c.AddProduct(product.Product{Name: "Um produto"})
+	store.SaveCart(c)
 	form := url.Values{}
 	form.Add("_method", "delete")
 	form.Add("index", "0")
@@ -62,31 +50,14 @@ func TestHandler_Delete_Valid(t *testing.T) {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	rr := httptest.NewRecorder()
-	c, _ := store.GetCart()
-	_, err := handler.DeleteProduct(rr, req, c)
+	err := handler.Update(rr, req)
 
 	if err != nil {
 		t.Fatal(err)
 	}
-}
-
-func TestHandler_Add_Valid(t *testing.T) {
-	store := mem.NewCartStorage()
-	handler := handler.NewCartHandler(store)
-
-	sku := "x"
-	form := url.Values{}
-	form.Add("sku", sku)
-	form.Add("name", "x")
-	form.Add("price", "10.5")
-	form.Add("option_size", "15")
-	req, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	rr := httptest.NewRecorder()
-	c, _ := store.GetCart()
-	_, err := handler.AddProduct(rr, req, c)
-	if err != nil {
-		t.Fatal(err)
+	c, _ = store.GetCart()
+	if len(c.Products) > 0 {
+		t.Fatal("nao deveria existir produtos no carrinho")
 	}
 }
 
@@ -103,20 +74,26 @@ func TestHandler_Add_Invalid_Price(t *testing.T) {
 	req, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	rr := httptest.NewRecorder()
-	c, _ := store.GetCart()
-	_, err := handler.AddProduct(rr, req, c)
+	err := handler.Update(rr, req)
 	if err == nil {
 		t.Fatal("esperava um erro de conversão")
 	}
 }
 
-func TestHandler_Update_Delete(t *testing.T) {
+func TestHandler_Add_Valid(t *testing.T) {
 	store := mem.NewCartStorage()
 	handler := handler.NewCartHandler(store)
+	sku := "x"
 	form := url.Values{}
-	form.Add("_method", "delete")
+	form.Add("sku", sku)
+	form.Add("name", "x")
+	form.Add("price", "10.5")
+	form.Add("option_size", "15")
 	req, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(form.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	rr := httptest.NewRecorder()
-	handler.Update(rr, req)
+	err := handler.Update(rr, req)
+	if err != nil {
+		t.Fatal(err)
+	}
 }

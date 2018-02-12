@@ -1,25 +1,26 @@
-package assets_test
+package handler_test
 
 import (
-	"github.com/miaversa/backend/assets"
+	"github.com/miaversa/backend/handler"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-func TestHandler_Valid(t *testing.T) {
-	handler := assets.New()
+func TestAssetHandler(t *testing.T) {
 	req, _ := http.NewRequest(http.MethodGet, "/assets?filename=tachyons.min.css", nil)
 	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
+	err := handler.AssetHandler(rr, req)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if rr.Code != http.StatusOK {
 		t.Fatalf("Received non-200 response: %d\n", rr.Code)
 	}
-
 	req, _ = http.NewRequest(http.MethodGet, "/assets?filename=x.min.css", nil)
 	rr = httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-	if rr.Code != http.StatusNotFound {
-		t.Fatalf("Received non-404 response: %d\n", rr.Code)
+	err = handler.AssetHandler(rr, req)
+	if err == nil {
+		t.Fatal("um erro era esperado")
 	}
 }

@@ -7,7 +7,6 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 type cartHandler struct {
@@ -21,16 +20,11 @@ func NewCartHandler(cartStorage cart.CartStorage) *cartHandler {
 func (h *cartHandler) GetCart(w http.ResponseWriter, r *http.Request) error {
 	c, err := h.cartStorage.GetCart()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	} else {
-		t := template.New("cart.html")
-		t.Parse(string(templates.MustAsset("cart.html")))
-		err = t.Execute(w, c)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+		return err
 	}
-	return nil
+	t := template.New("cart.html")
+	t.Parse(string(templates.MustAsset("cart.html")))
+	return t.Execute(w, c)
 }
 
 func (h *cartHandler) Update(w http.ResponseWriter, r *http.Request) error {
@@ -38,8 +32,7 @@ func (h *cartHandler) Update(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	method := r.PostFormValue("_method")
-	if strings.ToLower(method) == "delete" {
+	if r.PostFormValue("_method") == "delete" {
 		c, err = h.DeleteProduct(w, r, c)
 		if err != nil {
 			return err

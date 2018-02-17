@@ -1,7 +1,7 @@
 package cart
 
 type CartStorage interface {
-	GetCart() (Cart, error)
+	GetCart(id string) (Cart, error)
 	SaveCart(c Cart) error
-	DropCart() error
+	DropCart(id string) error
 }

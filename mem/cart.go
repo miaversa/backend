@@ -15,16 +15,16 @@ func NewCartStorage() *memCartStorage {
 	}
 }
 
-func (s *memCartStorage) GetCart() (cart.Cart, error) {
+func (s *memCartStorage) GetCart(id string) (cart.Cart, error) {
 	return s.Cart, nil
 }
 
-func (s *memCartStorage) SaveCart(c cart.Cart) error {
+func (s *memCartStorage) SaveCart(id string, c cart.Cart) error {
 	s.Cart = c
 	return nil
 }
 
-func (s *memCartStorage) DropCart() error {
+func (s *memCartStorage) DropCart(id string) error {
 	s.Cart.Products = []product.Product{}
 	return nil
 }

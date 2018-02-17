@@ -8,7 +8,7 @@ import (
 
 func TestCartStorage(t *testing.T) {
 	storage := mem.NewCartStorage()
-	c, err := storage.GetCart()
+	c, err := storage.GetCart("x")
 	if err != nil {
 		t.Fatal("erro ao pegar o carrinho")
 	}
@@ -23,8 +23,8 @@ func TestCartStorage(t *testing.T) {
 		},
 	}
 	c.AddProduct(p)
-	storage.SaveCart(c)
-	c, err = storage.GetCart()
+	storage.SaveCart("x", c)
+	c, err = storage.GetCart("x")
 	if err != nil {
 		t.Fatal("erro ao pegar o carrinho")
 	}
@@ -43,7 +43,7 @@ func TestCartStorage(t *testing.T) {
 	if optVal != c.Products[0].Options[0].Value {
 		t.Fatal("erro ao recuperar o valor da primeira opção")
 	}
-	err = storage.DropCart()
+	err = storage.DropCart("x")
 	if err != nil {
 		t.Fatal("erro ao dropar o carrinho")
 	}

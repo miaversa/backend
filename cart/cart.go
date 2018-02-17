@@ -6,12 +6,13 @@ import (
 
 // Cart stores the cart
 type Cart struct {
+	Key      string            `json:"key"`
 	Shipping float64           `json:"shipping"`
 	Products []product.Product `json:"products"`
 }
 
-func New() Cart {
-	return Cart{Products: []product.Product{}}
+func New(key string) Cart {
+	return Cart{Key: key, Products: []product.Product{}}
 }
 
 // Total returns the total

@@ -1,17 +1,21 @@
 package mem_test
 
 import (
+	"testing"
+
+	"github.com/miaversa/backend/cart"
 	"github.com/miaversa/backend/mem"
 	"github.com/miaversa/backend/product"
-	"testing"
 )
 
 func TestCartStorage(t *testing.T) {
-	storage := mem.NewCartStorage()
+	var storage cart.CartStorage
+	storage = mem.NewCartStorage()
 	c, err := storage.GetCart("x")
-	if err != nil {
-		t.Fatal("erro ao pegar o carrinho")
+	if err == nil {
+		t.Fatal("esperado erro")
 	}
+	c = cart.New("x")
 	sku, name, price := "sku", "name", 10.5
 	optKey, optVal := "size", "15"
 	p := product.Product{
@@ -23,7 +27,7 @@ func TestCartStorage(t *testing.T) {
 		},
 	}
 	c.AddProduct(p)
-	storage.SaveCart("x", c)
+	storage.SaveCart(c)
 	c, err = storage.GetCart("x")
 	if err != nil {
 		t.Fatal("erro ao pegar o carrinho")
@@ -45,9 +49,6 @@ func TestCartStorage(t *testing.T) {
 	}
 	err = storage.DropCart("x")
 	if err != nil {
-		t.Fatal("erro ao dropar o carrinho")
-	}
-	if len(storage.Cart.Products) > 0 {
 		t.Fatal("erro ao dropar o carrinho")
 	}
 }

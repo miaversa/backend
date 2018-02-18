@@ -1,8 +1,17 @@
 package cart
 
 import (
+	"errors"
+
 	"github.com/miaversa/backend/product"
 )
+
+type CartStorage interface {
+	GetCart(id string) (*Cart, error)
+	SaveCart(c *Cart) error
+}
+
+var CartNotFoundErr = errors.New("cart not found")
 
 // Cart stores the cart
 type Cart struct {
@@ -11,12 +20,12 @@ type Cart struct {
 	Products []product.Product `json:"products"`
 }
 
-func New(key string) Cart {
-	return Cart{Key: key, Products: []product.Product{}}
+func New(key string) *Cart {
+	return &Cart{Key: key, Products: []product.Product{}}
 }
 
 // Total returns the total
-func (c Cart) Total() float64 {
+func (c *Cart) Total() float64 {
 	sum := c.Shipping
 	for _, p := range c.Products {
 		sum += p.Price
@@ -25,7 +34,7 @@ func (c Cart) Total() float64 {
 }
 
 // Quantity returns the item quantity in the cart
-func (c Cart) Quantity() int {
+func (c *Cart) Quantity() int {
 	return len(c.Products)
 }
 

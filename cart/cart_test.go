@@ -1,13 +1,16 @@
 package cart_test
 
 import (
+	"testing"
+
 	"github.com/miaversa/backend/cart"
 	"github.com/miaversa/backend/product"
-	"testing"
+	"github.com/miaversa/backend/uuid"
 )
 
 func TestCart(t *testing.T) {
-	c := cart.New()
+	cid := uuid.New()
+	c := cart.New(cid)
 	if c.Products == nil {
 		t.Fatal("lista de produtos não inicializada")
 	}
@@ -20,7 +23,8 @@ func TestCart(t *testing.T) {
 }
 
 func TestCartAddProduct(t *testing.T) {
-	c := cart.New()
+	cid := uuid.New()
+	c := cart.New(cid)
 	p := product.Product{
 		SKU:     "sku",
 		Name:    "name",
@@ -40,25 +44,17 @@ func TestCartAddProduct(t *testing.T) {
 }
 
 func TestCartRemoveProduct(t *testing.T) {
-	c := cart.New()
+	cid := uuid.New()
+	c := cart.New(cid)
 	p := product.Product{
 		SKU:     "sku",
 		Name:    "name",
 		Price:   100,
 		Options: []product.Option{product.Option{Name: "opt", Value: "val"}},
 	}
-	p2 := product.Product{
-		SKU:     "sku2",
-		Name:    "name2",
-		Price:   100,
-		Options: []product.Option{product.Option{Name: "opt2", Value: "val2"}},
-	}
 	c.AddProduct(p)
 	c.RemoveProduct(0)
 	if len(c.Products) > 0 {
 		t.Fatal("deveria remover todos os produtos do carrinho")
 	}
-	c.AddProduct(p)
-	c.AddProduct(p2)
-	c.RemoveProduct(0)
 }

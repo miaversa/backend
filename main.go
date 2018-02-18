@@ -1,35 +1,57 @@
 package main
 
 import (
+	"log"
+	"net/http"
+
+	"github.com/miaversa/backend/customer"
+	"github.com/miaversa/backend/pagseguro"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/miaversa/backend/handler"
+	"github.com/miaversa/backend/app"
+	"github.com/miaversa/backend/config"
 	"github.com/miaversa/backend/mem"
-	"net/http"
 )
 
 func main() {
+	config.Load()
+
+	cust := &customer.Customer{
+		Email: "maria@gmail.com",
+		Name:  "Maria",
+		ShippingAddress: customer.ShippingAddress{
+			City:       "Sao Paulo",
+			Complement: "entrada 50",
+			Country:    "BRA",
+			District:   "Asa Norte",
+			Number:     "50",
+			PostalCode: "70770000",
+			State:      "DF",
+			Street:     "SCRN 716",
+		},
+	}
+
+	cartStorage := mem.NewCartStorage()
+
+	customerStorage := mem.NewCustomerStorage()
+	customerStorage.PutCustomer(cust)
+
+	pagSeguroService := pagseguro.New()
+
+	app := app.New(cartStorage, customerStorage, pagSeguroService)
+
 	r := chi.NewRouter()
 	r.Use(middleware.NoCache)
 	r.Use(middleware.StripSlashes)
 
-	cartStorage := mem.NewCartStorage()
-	sessionStorage := mem.NewSessionStorage()
-	customerStorage := mem.NewCustomerStorage()
+	r.Get("/assets", app.Assets)
 
-	rh := handler.NewRedirectHandler(sessionStorage)
+	r.Get("/carrinho", app.GetCart)
+	r.Post("/carrinho", app.UpdateCart)
+	r.Get("/pagar", app.ViewPayment)
 
-	cartHandler := handler.NewCartHandler(cartStorage)
-	paymentHandler := handler.NewPaymentHandler(sessionStorage, customerStorage)
-	loginHandler := handler.NewLoginHandler(sessionStorage, customerStorage)
-	registerHandler := handler.NewRegisterHandler(sessionStorage, customerStorage)
+	r.Get("/pagseguro/session", app.PagSeguroSessionID)
 
-	r.Get("/carrinho", handler.HandlerError(cartHandler.GetCart))
-	r.Post("/carrinho", handler.HandlerError(cartHandler.Update))
-	r.Get("/pagar", handler.HandlerError(paymentHandler.View))
-	r.Get("/login", handler.HandlerError(rh.RedirectIfSession(loginHandler.View)))
-	r.Post("/login", handler.HandlerError(rh.RedirectIfSession(loginHandler.Auth)))
-	r.Get("/cadastro", handler.HandlerError(rh.RedirectIfSession(registerHandler.View)))
-
-	http.ListenAndServe(":8000", r)
+	log.Fatal(http.ListenAndServe(config.Port, r))
 }

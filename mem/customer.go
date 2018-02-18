@@ -1,45 +1,38 @@
 package mem
 
 import (
-	"errors"
 	"github.com/miaversa/backend/customer"
 )
 
 type memCustomerStorage struct {
-	customers map[string]customer.Customer
-	addresses map[string]customer.ShippingAddress
+	customers map[string]*customer.Customer
 }
 
 func NewCustomerStorage() *memCustomerStorage {
 	return &memCustomerStorage{
-		customers: map[string]customer.Customer{},
-		addresses: map[string]customer.ShippingAddress{},
+		customers: map[string]*customer.Customer{},
 	}
 }
 
-func (s *memCustomerStorage) Get(email string) (customer.Customer, error) {
+func (s *memCustomerStorage) GetCustomer(email string) (*customer.Customer, error) {
 	if _, ok := s.customers[email]; !ok {
-		return customer.Customer{}, errors.New("usuário não encontrado")
+		return nil, customer.CustomerNotFoundErr
 	}
 	return s.customers[email], nil
 }
 
-func (s *memCustomerStorage) Put(c customer.Customer) error {
+func (s *memCustomerStorage) PutCustomer(c *customer.Customer) error {
 	if _, ok := s.customers[c.Email]; ok {
-		return errors.New("email já cadastrado")
+		return customer.CustomerAlreadyExistsErr
 	}
 	s.customers[c.Email] = c
 	return nil
 }
 
-func (s *memCustomerStorage) GetShippingAddress(email string) (customer.ShippingAddress, error) {
-	if _, ok := s.addresses[email]; !ok {
-		return customer.ShippingAddress{}, errors.New("usuário não possui endereço de entrega")
+func (s *memCustomerStorage) UpdateCustomer(c *customer.Customer) error {
+	if _, ok := s.customers[c.Email]; !ok {
+		return customer.CustomerNotFoundErr
 	}
-	return s.addresses[email], nil
-}
-
-func (s *memCustomerStorage) SetShippingAddress(email string, sa customer.ShippingAddress) error {
-	s.addresses[email] = sa
+	s.customers[c.Email] = c
 	return nil
 }

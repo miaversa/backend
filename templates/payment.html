@@ -2,9 +2,41 @@
 <html>
 <head>
 	<title>Teste</title>
-	<link rel="stylesheet" type="text/css" href="/assets/tachyons.min.css" />
+	<link rel="stylesheet" type="text/css" href="/assets?filename=tachyons.min.css" />
+	<script src="{{.PagSeguroJavascript}}"></script>
+	<script src="/assets?filename=jquery-3.3.1.min.js"></script>
+	<script src="/assets?filename=pagseguro.plugin.js"></script>
+	<script>
+		$(document).ready(function() {
+			$('#pagamento').pagseguro();
+		});
+	</script>
 </head>
 <body>
 	<h1>Pagamento</h1>
+	<form method="POST">
+		<p><input type="text" name="name" value="{{.Customer.Name}}" /></p>
+		<p><input type="text" name="email" value="{{.Customer.Email}}" /></p>
+
+		<p><input type="text" name="street" value="{{.Customer.ShippingAddress.Street}}" /></p>
+		<p><input type="text" name="number" value="{{.Customer.ShippingAddress.Number}}" /></p>
+		<p><input type="text" name="complement" value="{{.Customer.ShippingAddress.Complement}}" /></p>
+		<p><input type="text" name="district" value="{{.Customer.ShippingAddress.District}}" /></p>
+		<p><input type="text" name="city" value="{{.Customer.ShippingAddress.City}}" /></p>
+		<p><input type="text" name="state" value="{{.Customer.ShippingAddress.State}}" /></p>
+		<p><input type="text" name="country" value="{{.Customer.ShippingAddress.Country}}" /></p>
+		<p><input type="text" name="postal_code" value="{{.Customer.ShippingAddress.PostalCode}}" /></p>
+
+		<p>
+			<label><input type="radio" name="metodo" value="boleto"> boleto</label>
+			<label><input type="radio" name="metodo" value="cartao"> cartao</label>
+		</p>
+
+		<p><input type="text" name="card_number" value="" /></p>
+		<p><input type="text" name="brand" value="" /></p>
+		<p><input type="text" name="cvv" value="" /></p>
+		<p><input type="text" name="month" value="" /></p>
+		<p><input type="text" name="year" value="" /></p>
+	</form>
 </body>
 </html>
